@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/dispatch/importList",
+    "pages/dispatch/importDetail",
+    "pages/dispatch/transferList",
+    "pages/index/index",
+    "pages/addCgi/addCgi"
+  ],
+  "window": {
+    "backgroundColor": "#F6F6F6",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#F6F6F6",
+    "navigationBarTitleText": "库存管理",
+    "navigationBarTextStyle": "black"
+  }
+}

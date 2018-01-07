@@ -1,0 +1,29 @@
+<block wx:for="{{list}}" wx:key="{{dispatchlistid}}">
+  <view class="area">
+    <view class="text">
+      <view class="item">
+        <text class="item-title">时间</text>
+        <text class="item-value">{{item.createtime}}</text>
+      </view>
+      <view class="item">
+        <text class="item-title">地点</text>
+        <text class="item-value">{{item.tostore}}</text>
+      </view>
+    </view>
+    <button class="delete" type="warn">删除</button>
+  </view>
+</block>
+
+<view class="area">
+  <view class="text" width="100%">
+    <view class="item">
+      <text class="item-title">地点</text>
+      <picker bindchange="storeChange" class="item-value" value="{{storeindex}}" range="{{storeName}}">  
+        <view class="picker">  
+          {{storeName[storeindex]}}  
+        </view>  
+      </picker>  
+    </view>
+    <button bindtap="addList" class="add" type="primary">新的进货单</button>
+  </view>
+</view>
