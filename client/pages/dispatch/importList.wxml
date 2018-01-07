@@ -1,6 +1,6 @@
 <block wx:for="{{list}}" wx:key="{{dispatchlistid}}">
   <view class="area">
-    <view class="text">
+    <view class="text" bindtap="toDetail" id="{{index}}">
       <view class="item">
         <text class="item-title">时间</text>
         <text class="item-value">{{item.createtime}}</text>
@@ -12,7 +12,7 @@
     </view>
     <button class="delete" bindtap="delBind" type="warn" id="{{index}}">删除</button>
   </view>
-      <view class="item">
+      <view class="item" bindtap="toDetail" id="{{index}}">
         <text class="item-title">备注</text>
         <text class="item-value">{{item.remark}}</text>
       </view>

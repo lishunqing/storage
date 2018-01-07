@@ -12,6 +12,7 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    console.log(options);
 
     if (options.id != undefined) {
       that.setData({

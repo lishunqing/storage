@@ -17,6 +17,7 @@ module.exports = {
     await driver.schema.raw(
       'select d.dispatchlistid,\
               d.dispatchtype,\
+              d.tenantid,\
               t.name tenantname,\
               fs.name fromstore,\
               ts.name tostore,\

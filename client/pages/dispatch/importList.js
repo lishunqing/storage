@@ -115,19 +115,16 @@ Page({
       data: [loginInfo,
         { 
           'type': 1, 
-          'tenant': this.data.tenantID[this.data.storeindex],
-          'tostore': this.data.storeID[this.data.storeindex],
-          'remark': this.data.remark, 
+          'tenant': that.data.tenantID[that.data.storeindex],
+          'tostore': that.data.storeID[that.data.storeindex],
+          'remark': that.data.remark, 
         }],
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
-        //that.setData({ list: result.data })
+        console.log(result)
         wx.redirectTo({
-          url: "/pages/dispatch/importDetail",
-          params: {
-            id:12,
-          }
+          url: "/pages/dispatch/importDetail?id=" + result.data.insertId + "&tenant=" + that.data.tenantID[that.data.storeindex],
         });
       },
       fail: function (err) {
@@ -136,27 +133,11 @@ Page({
     })
   },
 
-  toDetail: function () {
+  toDetail: function (e) {
     var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
-    //提交新建进货单
-    wx.request({
-      url: `${config.service.host}/weapp/storage/addDispatchList`,
-      data: [loginInfo,
-        {
-          'type': 1,
-          'tenant': this.data.tenantID[this.data.storeindex],
-          'tostore': this.data.storeID[this.data.storeindex],
-          'remark': this.data.remark,
-        }],
-      method: 'POST',
-      header: { 'content-type': 'application/json' },
-      success: function (result) {
-        //that.setData({ list: result.data })
-      },
-      fail: function (err) {
-        console.log(err);
-      }
-    })
+    var id = e.currentTarget.id;
+    wx.redirectTo({
+      url: "/pages/dispatch/importDetail?id=" + that.data.list[id].dispatchlistid + "&tenant=" + that.data.list[id].tenantid ,
+    });
   },
 })
