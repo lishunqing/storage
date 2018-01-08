@@ -20,7 +20,9 @@ module.exports = {
     const appsecret = config.appSecret
     const code = ctx.query.js_code;
 
-    return http({
+    //获取loginInfo
+    var loginInfo;
+    await http({
       url: 'https://api.weixin.qq.com/sns/jscode2session',
       method: 'GET',
       params: {
@@ -34,9 +36,29 @@ module.exports = {
       if (res.errcode || !res.openid || !res.session_key) {
         throw new Error(`${ERRORS.ERR_GET_SESSION_KEY}\n${JSON.stringify(res)}`)
       } else {
-        ctx.body = res
+        loginInfo = res;
       }
+    });
+
+    var tenantList;
+    await driver.schema.raw('select * from tenant where tenantid > 0').then(result => {
+      tenantList = result[0]
     })
+
+    var tenantStyle = {};
+    await driver.schema.raw('select * from tenantstyle').then(result => {
+      for(var x in result[0]){
+        var item = result[0][x];
+        if (tenantStyle[item.tenantid]){
+          tenantStyle[item.tenantid].push(item);
+        }else{
+          tenantStyle[item.tenantid] = [item];
+        }
+      }
+      console.log(tenantStyle);
+    })
+    
+    ctx.body = [loginInfo, tenantList, tenantStyle];
   },
   getTenant: async (ctx, next) => {
     await driver.schema.raw('select * from tenant where tenantid > 0').then(result => {

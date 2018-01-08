@@ -85,7 +85,7 @@ Page({
             url: `${config.service.host}/weapp/storage/delDispatchList`,
             data: [loginInfo,
               {
-                'id': data[id].dispatchlistid,
+                'dispatchlistid': data[id].dispatchlistid,
               }],
             method: 'POST',
             header: { 'content-type': 'application/json' },
@@ -114,17 +114,18 @@ Page({
       url: `${config.service.host}/weapp/storage/addDispatchList`,
       data: [loginInfo,
         { 
-          'type': 1, 
-          'tenant': that.data.tenantID[that.data.storeindex],
-          'tostore': that.data.storeID[that.data.storeindex],
-          'remark': that.data.remark, 
+          dispatchtype: 1, 
+          tenantid: that.data.tenantID[that.data.storeindex],
+          tostore: that.data.storeID[that.data.storeindex],
+          remark: that.data.remark, 
+          createuser: loginInfo.openid,
         }],
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
         console.log(result)
         wx.redirectTo({
-          url: "/pages/dispatch/importDetail?id=" + result.data.insertId + "&tenant=" + that.data.tenantID[that.data.storeindex],
+          url: "/pages/dispatch/importDetail?id=" + result.data + "&tenant=" + that.data.tenantID[that.data.storeindex],
         });
       },
       fail: function (err) {

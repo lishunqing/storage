@@ -39,15 +39,7 @@ module.exports = {
   add: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
-    await driver.schema.raw(
-      'insert into dispatchlist(\
-              dispatchtype,\
-              tenantid,\
-              tostore,\
-              remark,\
-              createuser)\
-            values(?,?,?,?,?)', [arg.type, arg.tenant, arg.tostore,arg.remark, openid]
-    ).then(result => {
+    await driver('dispatchlist').insert(arg).then(result => {
       ctx.body = result[0]
     })
   },
@@ -55,7 +47,33 @@ module.exports = {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
     await driver.schema.raw(
-      'delete from dispatchlist where dispatchlistid = ?', [arg.id]
+      'delete from dispatchlist where dispatchlistid = ?', [arg.dispatchlistid]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  addDetail: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'replace into dispatchdetail(\
+        dispatchlistid,\
+        modelid,\
+        amount\
+      ) values (?,?,?)',[
+        arg.dispatchlistid,
+        arg.modelid,
+        arg.amount,
+      ]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  delDetail: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'delete from dispatchdetail where dispatchlistid = ? and modelid = ?', [arg.dispatchlistid,]
     ).then(result => {
       ctx.body = result[0]
     })

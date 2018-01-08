@@ -41,15 +41,21 @@ page {
 }
 
 .item-title {
-    width:70px;
+    width:51pt;
     margin: 20rpx;
-    align-items: center;
+    align-items: middle;
 }
 
 .item-value {
-    width:100%;
     color: #007AFF;
 }
+
+.item-picker {
+    width:34pt;
+    margin: 20rpx;
+    color: #FF7700;
+}
+
 .delete {
     font-size: 17pt;
     height: 100%;
