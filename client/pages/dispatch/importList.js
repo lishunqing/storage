@@ -18,41 +18,32 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
     //获取已有订单列表
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryDispatchList`,
-      data:[],
+      url: `${config.service.host}/weapp/storage/queryImportList`,
+      data: {
+        loginInfo: loginInfo,
+      },
       method: 'GET', 
       success: function(result){
-        that.setData({list:result.data})
-      },
-      fail: function(err){
-        console.log(err);
-      }
-    })
-    //获取可用店铺列表
-    wx.request({
-      url: `${config.service.host}/weapp/storage/store`,
-      data: [],
-      method: 'GET',
-      success: function (result) {
         var x;
         var storeid = new Array();
         var storename = new Array();
         var tenantid = new Array();
-        for (x in result.data)
-        {
-          storeid[x] = result.data[x].storeid;
-          storename[x] = result.data[x].name;
-          tenantid[x] = result.data[x].tenantid;
+        for (x in result.data[1]) {
+          storeid[x] = result.data[1][x].storeid;
+          storename[x] = result.data[1][x].name;
+          tenantid[x] = result.data[1][x].tenantid;
         };
         that.setData({
-          storeID:storeid,
-          storeName:storename,
-          tenantID:tenantid,
+          storeID: storeid,
+          storeName: storename,
+          tenantID: tenantid,
+          list: result.data[0],
         })
       },
-      fail: function (err) {
+      fail: function(err){
         console.log(err);
       }
     })

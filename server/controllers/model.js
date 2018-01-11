@@ -25,7 +25,7 @@ module.exports = {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
     await driver("model").insert(arg).then(result => {
-      ctx.body = result[0]
+      ctx.body = result[0];
     })
   },
   del: async (ctx, next) => {
@@ -34,7 +34,7 @@ module.exports = {
     await driver.schema.raw(
       'delete from dispatchlist where dispatchlistid = ?', [arg.id]
     ).then(result => {
-      ctx.body = result[0]
+      ctx.body = result[0];
     })
   },
 }

@@ -36,6 +36,53 @@ module.exports = {
       ctx.body = result[0]
     })
   },
+  queryImportList: async (ctx, next) => {
+    var condition = ctx.query;
+    var loginInfo = JSON.parse(condition.loginInfo);
+    //查询自己创建的未完成的进货单
+    var importList;
+    await driver.schema.raw(
+      'select d.dispatchlistid,\
+              d.dispatchtype,\
+              d.tenantid,\
+              t.name tenantname,\
+              fs.name fromstore,\
+              ts.name tostore,\
+              IFNULL(d.remark,"") remark,\
+              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              d.createuser\
+      from dispatchlist d\
+        left join store fs\
+          on d.fromstore = fs.storeid\
+        left join store ts\
+          on d.tostore = ts.storeid\
+        left join tenant t\
+          on d.tenantid = t.tenantid\
+      where d.dispatchtype = 1\
+      and d.createuser = ?\
+      and d.finishtime is null\
+      order by d.dispatchlistid',
+      [loginInfo.userid]
+    ).then(result => {
+      importList = result[0]
+    })
+
+    //查询自己有权限的店铺
+    var storelist;
+    await driver.schema.raw(
+      'select s.*\
+      from permission p\
+        left join store s\
+          on p.storeid = s.storeid\
+      where p.privilegeid = 1\
+      and p.userid = ?',
+      [loginInfo.userid]
+    ).then(result => {
+      storelist = result[0]
+    })
+
+    ctx.body = [importList,storelist];
+  },
   add: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
@@ -73,9 +120,23 @@ module.exports = {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
     await driver.schema.raw(
-      'delete from dispatchdetail where dispatchlistid = ? and modelid = ?', [arg.dispatchlistid,]
+      'delete from dispatchdetail where dispatchlistid = ? and modelid = ?', [arg.dispatchlistid,arg.modelid]
     ).then(result => {
       ctx.body = result[0]
     })
   },
+  queryDetail: async (ctx, next) => {
+    await driver.schema.raw(
+      'select d.amount,\
+              m.*\
+      from dispatchdetail d\
+        left join model m\
+        on d.modelid = m.modelid\
+      where d.dispatchlistid = ?\
+      order by d.modelid',
+      [ctx.query.dispatchid]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  }
 }

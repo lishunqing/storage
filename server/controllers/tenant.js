@@ -19,9 +19,11 @@ module.exports = {
     const appid = config.appId
     const appsecret = config.appSecret
     const code = ctx.query.js_code;
+    
 
     //获取loginInfo
     var loginInfo;
+    var sessionkey;
     await http({
       url: 'https://api.weixin.qq.com/sns/jscode2session',
       method: 'GET',
@@ -37,7 +39,14 @@ module.exports = {
         throw new Error(`${ERRORS.ERR_GET_SESSION_KEY}\n${JSON.stringify(res)}`)
       } else {
         loginInfo = res;
+        sessionkey = res.session_key;
       }
+    });
+    await driver.schema.raw('replace into usersession(openid,sessionkey) values(?,?)', [loginInfo.openid, loginInfo.session_key]);
+
+    await driver.schema.raw('select * from user where openid = ?', [loginInfo.openid]).then(result => {
+      loginInfo = result[0][0];
+      loginInfo.session_key = sessionkey;
     });
 
     var tenantList;
@@ -57,9 +66,17 @@ module.exports = {
       }
       console.log(tenantStyle);
     })
+
+    var permission;
+    await driver.schema.raw('select privilegeid,storeid from permission where userid = ?',[loginInfo.userid]).then(result => {
+      permission = result[0]
+    })
     
-    ctx.body = [loginInfo, tenantList, tenantStyle];
+    
+    ctx.body = [loginInfo, tenantList, tenantStyle, permission];
   },
+
+  /*
   getTenant: async (ctx, next) => {
     await driver.schema.raw('select * from tenant where tenantid > 0').then(result => {
       ctx.body = result[0]
@@ -70,4 +87,5 @@ module.exports = {
       ctx.body = result[0]
     })
   },
+*/
 }

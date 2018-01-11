@@ -7,11 +7,12 @@ Page({
     dispatchListID: 0,
     tenantID: 0,
     existedModel: false,
+    modelInList: false,
     model: {},
     styleValue: [],
-    modelNameList: ['上衣', '衬衫', '裤子'],
+    modelNameList: [],
     styleValue: [],
-    styleList: [[], ['红', '黄', '绿'], ['s', 'm', 'l']],
+    styleValueList: [],
   },
 
   /**
@@ -20,17 +21,27 @@ Page({
   onLoad: function (options) {
     var that = this;
     if ((options.id != undefined) && (options.tenant != undefined)) {
+      var modelnamelist = wx.getStorageSync('modelNameList.' + options.tenant);
       var tenantStyle = wx.getStorageSync('tenantStyle')[options.tenant];
+      var stylevaluelist = [];
+      for(var x in tenantStyle){
+        var itemlist = wx.getStorageSync('styleValueList.' + options.tenant + '.' + tenantStyle[x].styleid);
+        stylevaluelist[tenantStyle[x].styleid] = itemlist;
+      }
+
       that.setData({
+        modelNameList: modelnamelist,
+        styleValueList: stylevaluelist,
         dispatchListID: options.id,
         tenantID: options.tenant,
         style: tenantStyle,
       });
     }
-    //获取已有订单列表
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryDispatchList`,
-      data: [],
+      url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
+      data: {
+        dispatchid: that.data.dispatchListID,
+      },
       method: 'GET',
       success: function (result) {
         that.setData({ list: result.data })
@@ -52,7 +63,7 @@ Page({
       })
       return;
     }
-    //获取已有订单列表
+    //尝试获取款号
     wx.request({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: {
@@ -66,15 +77,24 @@ Page({
           var m = result.data[0];
           m.price = parseFloat(m.price).toFixed(2);
           m.cost = parseFloat(m.cost).toFixed(2);
+          //判断款号是否在货单列表中
+          var inlist = false;
+          for (var x in that.data.list) {
+            if (that.data.list[x].modelid == m.modelid) {
+              inlist = true;
+            }
+          }
           that.setData({
             model: m,
             existedModel: true,
+            modelInList: inlist,
           })
         }
         else {
           that.setData({
             model: { modelcode: e.detail.value },
             existedModel: false,
+            modelInList: false,
           })
         }
       },
@@ -138,7 +158,7 @@ Page({
   stylePicker: function (e) {
     var that = this;
     var s = that.data.styleValue;
-    s[e.target.id] = that.data.styleList[e.target.id][e.detail.value];
+    s[e.target.id] = that.data.styleValueList[e.target.id][e.detail.value];
     that.setData({
       styleValue: s,
     })
@@ -150,7 +170,7 @@ Page({
     if (that.data.existedModel) {
       err = that.createDetail(that.data.model.modelid);
     } else {
-      err = that.createModel(createDetail);
+      err = that.createModel(that.createDetail);
     }
 
     if (err) {
@@ -161,6 +181,7 @@ Page({
       })
       return;
     }
+
   },
 
   createDetail: function (id) {
@@ -181,7 +202,19 @@ Page({
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
-        console.log(result)
+        wx.request({
+          url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
+          data: {
+            dispatchid: that.data.dispatchListID,
+          },
+          method: 'GET',
+          success: function (result) {
+            that.setData({ list: result.data })
+          },
+          fail: function (err) {
+            console.log(err);
+          }
+        })
         return;
       },
       fail: function (err) {
@@ -231,12 +264,146 @@ Page({
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
-        console.log(result)
-        return next(result);
+        //todo:set to existed model,update stylelist and namelist
+        that.setData({
+          existedModel: true,
+          model: opt,
+        });
+        updateStyle();
+        return next(result.data);
       },
       fail: function (err) {
         console.log(err);
       }
     })
+  },
+  choose: function (e) {
+    var that = this;
+    for (var x in that.data.list) {
+      var t = that.data.list[x];
+      if (that.data.list[x].modelid == e.currentTarget.id) {
+        that.setData({
+          existedModel: true,
+          modelInList: true,
+          model: that.data.list[x],
+          amount: that.data.list[x].amount,
+        });
+      }
+    }
+  },
+  delDetail: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    if (e.currentTarget.id == 'd') {
+      //删除条目
+      wx.showModal({
+        title: '提示',
+        content: '确定要删除这个进货条目吗？\r\n款号：' + that.data.model.modelcode,
+        success: function (sm) {
+          if (sm.confirm) {
+            //确认删除条目
+            wx.request({
+              url: `${config.service.host}/weapp/storage/delDispatchDetail`,
+              data: [loginInfo,
+                {
+                  dispatchlistid: that.data.dispatchListID,
+                  modelid: that.data.model.modelid,
+                }],
+              method: 'POST',
+              header: { 'content-type': 'application/json' },
+              success: function (result) {
+                var data = that.data.list;
+                for (var x in data) {
+                  if (data[x].modelid == that.data.model.modelid) {
+                    data.splice(x, 1);
+                    break;
+                  }
+                }
+                that.setData({
+                  list: data,
+                  modelInList: false,
+                });
+              },
+              fail: function (err) {
+                console.log(err);
+              }
+            })
+          } else if (sm.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    } else {
+      //删除款式
+      wx.showModal({
+        title: '提示',
+        content: '确定要删除这个款式吗？\n注意：只有没有被使用（进货/销售）过的款式才能被删除。',
+        success: function (sm) {
+          if (sm.confirm) {
+            var data = that.data.list;
+            //确认删除货单
+            wx.request({
+              url: `${config.service.host}/weapp/storage/delModel`,
+              data: [loginInfo,
+                {
+                  id: that.data.model.modelid,
+                }],
+              method: 'POST',
+              header: { 'content-type': 'application/json' },
+              success: function (result) {
+                wx.showToast({
+                  title: '删除了' + result.data.affectedRows + '行数据。',
+                  icon: 'success'
+                })
+              },
+              fail: function (err) {
+                console.log(err);
+              }
+            })
+          } else if (sm.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }
+  },
+  updateStyle: function () {
+    var that = this;
+    var item = that.data.modelName;
+    var itemlist = that.data.modelNameList;
+    for (var x in itemlist) {
+      if (itemlist[x] == item) {
+        itemlist.splice(x, 1);
+        break;
+      }
+    }
+    itemlist.unshift(item);
+    itemlist.splice(20);
+    that.setData({
+      modelNameList: itemlist,
+    });
+    wx.setStorageSync('modelNameList.' + that.data.tenantID, itemlist);
+
+    itemlist = that.data.styleValueList;
+    for(var x in that.data.style){
+      var stylelist = itemlist[that.data.style[x].styleid];
+      var style = that.data.styleValue[that.data.style[x].styleid];
+
+      for (var y in stylelist) {
+        if (stylelist[y] == style) {
+          stylelist.splice(y, 1);
+          break;
+        }
+      }
+      stylelist.unshift(style);
+      stylelist.splice(20);
+
+      itemlist[that.data.style[x].styleid] = stylelist;
+
+      wx.setStorageSync('styleValueList.' + that.data.tenantID + '.' + that.data.style[x].styleid, stylelist);
+    }
+    that.setData({
+      styleValueList: itemlist,
+    });
   },
 })

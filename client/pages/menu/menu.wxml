@@ -1,0 +1,13 @@
+<!--menu.wxml-->
+<view class="area">
+    <button bindtap="importList" class="button" type="default">进货</button>
+    <button bindtap="delDetail" class="button" type="default">次品返厂</button>
+
+</view>
+
+<view class="area">
+    <button bindtap="addDetail" class="button" type="default">入库签收</button>
+    <button bindtap="delDetail" class="button" type="default">转运签发</button>
+    <button bindtap="delDetail" class="button" type="default">库存盘点</button>
+
+</view>

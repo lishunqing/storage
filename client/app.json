@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/menu/menu",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
     "pages/dispatch/transferList",
@@ -8,7 +9,7 @@
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
-    "backgroundTextStyle": "light",
+    "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#F6F6F6",
     "navigationBarTitleText": "库存管理",
     "navigationBarTextStyle": "black"
