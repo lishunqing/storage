@@ -3,9 +3,12 @@
     "pages/menu/menu",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
-    "pages/dispatch/transferList",
-    "pages/index/index",
-    "pages/addCgi/addCgi"
+    "pages/dispatch/exportList",
+    "pages/dispatch/exportDetail",
+    "pages/store/transferList",
+    "pages/store/transferDetail",
+    "pages/store/instoreList",
+    "pages/store/instoreConfirm"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

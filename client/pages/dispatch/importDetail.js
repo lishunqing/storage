@@ -1,15 +1,13 @@
 var config = require('../../config')
-
+ 
 // importList.js
 Page({
 
   data: {
     dispatchListID: 0,
-    tenantID: 0,
     existedModel: false,
     modelInList: false,
     model: {},
-    styleValue: [],
     modelNameList: [],
     styleValue: [],
     styleValueList: [],
@@ -20,31 +18,33 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    if ((options.id != undefined) && (options.tenant != undefined)) {
-      var modelnamelist = wx.getStorageSync('modelNameList.' + options.tenant);
-      var tenantStyle = wx.getStorageSync('tenantStyle')[options.tenant];
-      var stylevaluelist = [];
-      for(var x in tenantStyle){
-        var itemlist = wx.getStorageSync('styleValueList.' + options.tenant + '.' + tenantStyle[x].styleid);
-        stylevaluelist[tenantStyle[x].styleid] = itemlist;
-      }
-
-      that.setData({
-        modelNameList: modelnamelist,
-        styleValueList: stylevaluelist,
-        dispatchListID: options.id,
-        tenantID: options.tenant,
-        style: tenantStyle,
+    if (options.id == undefined){
+      wx.redirectTo({
+        url: "/pages/menu/menu",
       });
     }
     wx.request({
       url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
       data: {
-        dispatchid: that.data.dispatchListID,
+        dispatchid: options.id,
       },
       method: 'GET',
       success: function (result) {
-        that.setData({ list: result.data })
+        var modelnamelist = wx.getStorageSync('modelNameList.' + result.data[0].tenantid);
+        var tenantStyle = wx.getStorageSync('tenantStyle')[result.data[0].tenantid];
+        var stylevaluelist = [];
+        for (var x in tenantStyle) {
+          var itemlist = wx.getStorageSync('styleValueList.' + result.data[0].tenantid + '.' + tenantStyle[x].styleid);
+          stylevaluelist[tenantStyle[x].styleid] = itemlist;
+        }
+        that.setData({
+          modelNameList: modelnamelist,
+          styleValueList: stylevaluelist,
+          dispatchListID: options.id,
+          style: tenantStyle,
+          dispatch: result.data[0], 
+          list: result.data[1],
+        })
       },
       fail: function (err) {
         console.log(err);
@@ -68,7 +68,7 @@ Page({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: {
         openid: loginInfo.openid,
-        tenant: that.data.tenantID,
+        tenant: that.data.dispatch.tenantid,
         model: e.detail.value,
       },
       method: 'GET',
@@ -209,7 +209,15 @@ Page({
           },
           method: 'GET',
           success: function (result) {
-            that.setData({ list: result.data })
+            that.setData({
+              dispatch: result.data[0],
+              list: result.data[1],
+            })
+            if (that.data.dispatch.finishtime != null){
+              wx.redirectTo({
+                url: "pages/menu/menu",
+              });
+            }
           },
           fail: function (err) {
             console.log(err);
@@ -227,7 +235,7 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
 
-    var opt = { 'tenantid': that.data.tenantID };
+    var opt = { 'tenantid': that.data.dispatch.tenantid };
     //校验modecode不为空
     if (that.data.model.modelcode == undefined) {
       return '款号不能为空';
@@ -382,7 +390,7 @@ Page({
     that.setData({
       modelNameList: itemlist,
     });
-    wx.setStorageSync('modelNameList.' + that.data.tenantID, itemlist);
+    wx.setStorageSync('modelNameList.' + that.data.dispatch.tenantid, itemlist);
 
     itemlist = that.data.styleValueList;
     for(var x in that.data.style){
@@ -400,10 +408,42 @@ Page({
 
       itemlist[that.data.style[x].styleid] = stylelist;
 
-      wx.setStorageSync('styleValueList.' + that.data.tenantID + '.' + that.data.style[x].styleid, stylelist);
+      wx.setStorageSync('styleValueList.' + that.data.dispatch.tenantid + '.' + that.data.style[x].styleid, stylelist);
     }
     that.setData({
       styleValueList: itemlist,
     });
+  },
+  finish: function () {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    wx.showModal({
+      title: '提示',
+      content: '确定要完成进货单吗？\n注意：完成进货单后就不能再修改进货单里面的条目和数量了，请再次确认!',
+      success: function (sm) {
+        if (sm.confirm) {
+          //确认删除货单
+          wx.request({
+            url: `${config.service.host}/weapp/storage/finishDispatch`,
+            data: [loginInfo,
+              {
+                dispatchlistid: that.data.dispatchListID,
+              }],
+            method: 'POST',
+            header: { 'content-type': 'application/json' },
+            success: function (result) {
+              wx.redirectTo({
+                url: "/pages/store/instoreConfirm?id=" + that.data.dispatchListID,
+              });
+            },
+            fail: function (err) {
+              console.log(err);
+            }
+          })
+        } else if (sm.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
   },
 })

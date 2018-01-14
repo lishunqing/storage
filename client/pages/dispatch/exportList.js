@@ -1,15 +1,17 @@
 var config = require('../../config')
+// pages/dispatch/exportList.js
+Page({ 
 
-// importList.js 
-Page({
-
+  /**
+   * 页面的初始数据
+   */
   data: {
-    list:[],
-    storeID:[],
-    storeName:[],
-    tenantID:[],
-    storeindex:0,
-    remark:'',
+    list: [],
+    storeID: [],
+    storeName: [],
+    tenantID: [],
+    storeindex: 0,
+    remark: '',
   },
 
   /**
@@ -23,11 +25,11 @@ Page({
       url: `${config.service.host}/weapp/storage/queryDispatchList`,
       data: {
         loginInfo: loginInfo,
-        dispatchtype: 1,
+        dispatchtype: 3,
         privilegeid: 1,
       },
-      method: 'GET', 
-      success: function(result){
+      method: 'GET',
+      success: function (result) {
         var storeid = new Array();
         var storename = new Array();
         var tenantid = new Array();
@@ -43,7 +45,7 @@ Page({
           list: result.data[0],
         })
       },
-      fail: function(err){
+      fail: function (err) {
         console.log(err);
       }
     })
@@ -51,17 +53,17 @@ Page({
 
   storeChange: function (e) {
     this.setData({
-      storeindex:e.detail.value,
+      storeindex: e.detail.value,
     });
   },
 
-  remarkInput: function(e) {
+  remarkInput: function (e) {
     this.setData({
       remark: e.detail.value,
     });
   },
 
-  delBind: function (e){
+  delBind: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     var id = e.currentTarget.id;
@@ -100,15 +102,15 @@ Page({
   addBind: function () {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    //提交新建进货单
+    //提交新建货单
     wx.request({
       url: `${config.service.host}/weapp/storage/addDispatchList`,
       data: [loginInfo,
-        { 
-          dispatchtype: 1, 
+        {
+          dispatchtype: 3,
           tenantid: that.data.tenantID[that.data.storeindex],
-          tostore: that.data.storeID[that.data.storeindex],
-          remark: that.data.remark, 
+          fromstore: that.data.storeID[that.data.storeindex],
+          remark: that.data.remark,
           createuser: loginInfo.userid,
         }],
       method: 'POST',
@@ -116,7 +118,7 @@ Page({
       success: function (result) {
         console.log(result)
         wx.redirectTo({
-          url: "/pages/dispatch/importDetail?id=" + result.data,
+          url: "/pages/dispatch/exportDetail?id=" + result.data,
         });
       },
       fail: function (err) {
@@ -129,7 +131,7 @@ Page({
     var that = this;
     var id = e.currentTarget.id;
     wx.navigateTo({
-      url: "/pages/dispatch/importDetail?id=" + that.data.list[id].dispatchlistid,
+      url: "/pages/dispatch/exportDetail?id=" + that.data.list[id].dispatchlistid,
     });
   },
 })

@@ -20,7 +20,7 @@
       <picker wx:if="{{!existedModel}}" bindchange="stylePicker" class="item-picker" id="{{item.styleid}}" range="{{styleValueList[item.styleid]}}">  
         <text>选择</text>  
       </picker>  
-      <text wx:if="{{existedModel}}" class="item-disable">{{model.style1}}</text>
+      <text wx:if="{{existedModel}}" class="item-disable">{{model["style" + item.styleid]}}</text>
     </view>
     </block>
     <view class="item">
@@ -60,4 +60,4 @@
     </view>
   </block>
 </view>
-<button bindtap="updateStyle" class="button" type="primary">测试</button>
+<button bindtap="finish" class="button" type="primary">完成进货单</button>

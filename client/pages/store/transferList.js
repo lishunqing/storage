@@ -1,15 +1,20 @@
 var config = require('../../config')
-
-// importList.js 
+// transferList.js
 Page({
 
+  /**
+   * 页面的初始数据
+   */
   data: {
-    list:[],
-    storeID:[],
-    storeName:[],
-    tenantID:[],
-    storeindex:0,
-    remark:'',
+    list: [],
+    storeID: [],
+    storeName: [],
+    tenantID: [],
+    tostoreID:[],
+    tostoreName:[],
+    fromstoreindex: 0,
+    tostoreindex: 0,
+    remark: '',
   },
 
   /**
@@ -23,11 +28,11 @@ Page({
       url: `${config.service.host}/weapp/storage/queryDispatchList`,
       data: {
         loginInfo: loginInfo,
-        dispatchtype: 1,
-        privilegeid: 1,
+        dispatchtype: 2,
+        privilegeid: 2,
       },
-      method: 'GET', 
-      success: function(result){
+      method: 'GET',
+      success: function (result) {
         var storeid = new Array();
         var storename = new Array();
         var tenantid = new Array();
@@ -42,26 +47,56 @@ Page({
           tenantID: tenantid,
           list: result.data[0],
         })
+        that.buildtostore(0);
       },
-      fail: function(err){
+      fail: function (err) {
         console.log(err);
       }
     })
   },
 
-  storeChange: function (e) {
+  buildtostore: function(idx){
+    var that=this;
+    var tenant = that.data.tenantID[idx];
+    var tostoreid = [];
+    var tostorename = [];
+    for (var x in that.data.storeID) {
+      if (that.data.tenantID[x] != tenant) {
+        continue;
+      }
+      if (that.data.storeID[x] == that.data.storeID[idx]) {
+        continue;
+      }
+      tostoreid.push(that.data.storeID[x]);
+      tostorename.push(that.data.storeName[x]);
+    }
     this.setData({
-      storeindex:e.detail.value,
+      tostoreindex: 0,
+      tostoreID: tostoreid,
+      tostoreName: tostorename,
     });
   },
 
-  remarkInput: function(e) {
+  fromstoreChange: function (e) {
+    var that = this;
+    this.setData({
+      fromstoreindex: e.detail.value,
+    });
+    that.buildtostore(e.detail.value);
+  },
+  tostoreChange: function (e) {
+    this.setData({
+      tostoreindex: e.detail.value,
+    });
+  },
+
+  remarkInput: function (e) {
     this.setData({
       remark: e.detail.value,
     });
   },
 
-  delBind: function (e){
+  delBind: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     var id = e.currentTarget.id;
@@ -100,15 +135,16 @@ Page({
   addBind: function () {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    //提交新建进货单
+    //提交新建货单
     wx.request({
       url: `${config.service.host}/weapp/storage/addDispatchList`,
       data: [loginInfo,
-        { 
-          dispatchtype: 1, 
-          tenantid: that.data.tenantID[that.data.storeindex],
-          tostore: that.data.storeID[that.data.storeindex],
-          remark: that.data.remark, 
+        {
+          dispatchtype: 2,
+          tenantid: that.data.tenantID[that.data.fromstoreindex],
+          fromstore: that.data.storeID[that.data.fromstoreindex],
+          tostore: that.data.storeID[that.data.tostoreindex],
+          remark: that.data.remark,
           createuser: loginInfo.userid,
         }],
       method: 'POST',
@@ -116,7 +152,7 @@ Page({
       success: function (result) {
         console.log(result)
         wx.redirectTo({
-          url: "/pages/dispatch/importDetail?id=" + result.data,
+          url: "/pages/store/transferDetail?id=" + result.data,
         });
       },
       fail: function (err) {
@@ -129,7 +165,7 @@ Page({
     var that = this;
     var id = e.currentTarget.id;
     wx.navigateTo({
-      url: "/pages/dispatch/importDetail?id=" + that.data.list[id].dispatchlistid,
+      url: "/pages/store/transferDetail?id=" + that.data.list[id].dispatchlistid,
     });
   },
 })

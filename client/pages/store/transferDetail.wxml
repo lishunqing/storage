@@ -1,0 +1,58 @@
+<!--pages/store/transferDetail.wxml-->
+<view class="area">
+  <view class="text" width="100%">
+    <view class="item">
+      <text class="item-title">款号</text>
+      <input bindblur="codeInput" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
+      <text wx:if="{{!existedModel}}" class="item-picker"></text>
+    </view>
+    <view class="item">
+      <text class="item-title">名称</text>
+      <text class="item-disable">{{model.name}}</text>
+    </view>
+    <block wx:for="{{style}}" wx:key="{{styleid}}">
+    <view class="item">
+      <text class="item-title">{{item.stylename}}</text>
+      <text class="item-disable">{{model["style" + item.styleid]}}</text>
+    </view>
+    </block>
+    <view class="item">
+      <text class="item-title">价格</text>
+      <text class="item-disable">{{model.price}}</text>
+    </view>
+    <view class="item">
+      <text class="item-title">库存</text>
+      <text class="item-disable">{{model.storageamount}}</text>
+    </view>
+    <view class="item">
+      <text class="item-title">数量</text>
+      <input bindblur="amountInput" class="item-value" type="number" placeholder="输入返厂数量" value="{{model.dispatchamount > 0?model.dispatchamount:''}}" wx:if="{{model.storageamount}}"/>  
+    </view>
+  </view>
+</view>
+
+<view class="area">
+  <radio-group class="item" bindchange="radioChange">
+    <label class="radio" wx:for-items="{{choose}}" wx:key="{{item.value}}">
+      <radio value="{{item.value}}" checked="{{item.checked}}"/>{{item.value}}
+    </label>
+  </radio-group>
+</view>
+
+<view class="table">
+  <view class="th">
+      <view class="tdcode">款号</view>
+      <view class="tdname">名称</view>
+      <view class="tdstore">库存</view>
+      <view class="tdamount">数量</view>
+  </view>
+  <block wx:for="{{list}}" wx:key="{{modelid}}">
+    <view class="tr" wx:if="{{allStorage || (item.dispatchamount > 0)}}">
+        <view class="tdcode" bindtap="choose" id="{{item.modelid}}">{{item.modelcode}}</view>
+        <view class="tdname" bindtap="choose" id="{{item.modelid}}">{{item.name}}</view>
+        <view class="tdstore" bindtap="min" id="{{item.modelid}}">{{item.storageamount}}</view>
+        <view class="tdamount" bindtap="add" id="{{item.modelid}}">{{item.dispatchamount}}</view>
+    </view>
+  </block>
+</view>
+<button bindtap="finish" class="button" type="primary">完成转运单</button>

@@ -16,8 +16,23 @@ Page({
   },
 
   importList: function(e){
-    wx.redirectTo({
+    wx.navigateTo({
       url: "/pages/dispatch/importList",
     });
-  }
+  },
+  exportList: function (e) {
+    wx.navigateTo({
+      url: "/pages/dispatch/exportList",
+    });
+  },
+  instoreList: function (e) {
+    wx.navigateTo({
+      url: "/pages/store/instoreList",
+    });
+  },
+  transferList: function (e) {
+    wx.navigateTo({
+      url: "/pages/store/transferList",
+    });
+  },
 })

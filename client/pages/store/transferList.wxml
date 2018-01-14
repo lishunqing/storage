@@ -1,0 +1,50 @@
+<!--transferList.wxml-->
+<block wx:for="{{list}}" wx:key="{{dispatchlistid}}">
+  <view class="area">
+    <view class="text" bindtap="toDetail" id="{{index}}">
+      <view class="item">
+        <text class="item-title">时间</text>
+        <text class="item-value">{{item.createtime}}</text>
+      </view>
+      <view class="item">
+        <text class="item-title">出库</text>
+        <text class="item-value">{{item.fromstore}}</text>
+      </view>
+      <view class="item">
+        <text class="item-title">入库</text>
+        <text class="item-value">{{item.tostore}}</text>
+      </view>
+    </view>
+    <button class="delete" bindtap="delBind" type="warn" id="{{index}}">删 除</button>
+  </view>
+      <view class="item" bindtap="toDetail" id="{{index}}">
+        <text class="item-title">备注</text>
+        <text class="item-value">{{item.remark}}</text>
+      </view>
+</block>
+
+<view class="area">
+  <view class="text" width="100%">
+    <view class="item">
+      <text class="item-title">出库</text>
+      <picker bindchange="fromstoreChange" class="item-value" value="{{fromstoreindex}}" range="{{storeName}}">  
+        <view class="picker">  
+          {{storeName[fromstoreindex]}}  
+        </view>  
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">入库</text>
+      <picker bindchange="tostoreChange" class="item-value" value="{{tostoreindex}}" range="{{tostoreName}}">  
+        <view class="picker">  
+          {{tostoreName[tostoreindex]}}  
+        </view>  
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">备注</text>
+      <input bindinput="remarkInput" class="item-value" placeholder="转运备注，可以不填。"/>
+    </view>
+    <button bindtap="addBind" class="add" type="primary">新的转运单</button>
+  </view>
+</view>
