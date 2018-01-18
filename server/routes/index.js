@@ -34,9 +34,14 @@ const controllers = require('../controllers')
 
 
 // --业务消息
-router.get('/storage/login', controllers.tenant.getLogin)
-//router.get('/storage/tenant', controllers.tenant.getTenant)
-//router.get('/storage/store', controllers.tenant.getStore)
+router.get('/storage/login', controllers.user.getLogin)
+router.post('/storage/saveUser', controllers.user.save)
+router.post('/storage/userList', controllers.user.queryList)
+router.post('/storage/disable', controllers.user.disable)
+router.post('/storage/queryPrivilege', controllers.user.queryPrivilege)
+router.post('/storage/savePrivilege', controllers.user.savePrivilege)
+
+
 router.get('/storage/getModel', controllers.model.query)
 router.post('/storage/addModel', controllers.model.add)
 router.post('/storage/delModel', controllers.model.del)

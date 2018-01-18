@@ -1,0 +1,20 @@
+<!--pages/menu/userList.wxml-->
+<view class="table">
+  <view class="th">
+      <view class="tdname">称呼</view>
+      <view class="tdremark">备注</view>
+      <view class="tddisable">激活  </view>
+  </view>
+  <block wx:for="{{list}}" wx:key="{{modelid}}">
+    <view class="tr">
+        <view class="tdname" bindtap="choose" id="{{item.userid}}">{{item.username}}</view>
+        <view class="tdremark" bindtap="choose" id="{{item.userid}}">{{item.userremark}}</view>
+        <view class="tddisable" bindtap="disable" id="{{item.userid}}">{{item.disabled?"×":"√"}}</view>
+    </view>
+  </block>
+</view>
+
+<view class="area">
+<button bindtap="scan" class="button" type="primary">提取二维码信息</button>
+<view class='title'>{{text}}</view>
+</view>

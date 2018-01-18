@@ -1,13 +1,16 @@
 <!--menu.wxml-->
-<view class="area">
+<view class="area" wx:if="{{permissions[1]}}">
     <button bindtap="importList" class="button" type="default">进货</button>
     <button bindtap="exportList" class="button" type="default">次品返厂</button>
 
 </view>
 
-<view class="area">
+<view class="area" wx:if="{{permissions[2]}}">
     <button bindtap="instoreList" class="button" type="default">入库签收</button>
     <button bindtap="transferList" class="button" type="default">转运签发</button>
-    <button bindtap="delDetail" class="button" type="default">库存盘点</button>
+</view>
 
+<view class="area">
+    <button bindtap="userInfo" class="button" type="default">个人信息</button>
+    <button bindtap="userList" class="button" type="default" wx:if="{{permissions[0]}}">用户管理</button>
 </view>

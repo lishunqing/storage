@@ -1,6 +1,9 @@
 {
   "pages": [
     "pages/menu/menu",
+    "pages/menu/userInfo",
+    "pages/menu/userList",
+    "pages/menu/userPermission",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
     "pages/dispatch/exportList",

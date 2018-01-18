@@ -1,0 +1,23 @@
+<!--pages/menu/userInfo.wxml-->
+<view class="area" wx:if="{{disabled != false}}">
+您的用户信息还没有经过认证，请输入您的称呼和备注，以便于管理员审核。
+联系管理员审核以后，点击下面的更新按钮，以进入菜单。
+</view>
+
+<view class="area">
+  <view class="text">
+    <view class="item">
+      <text class="item-title">称呼</text>
+      <input bindblur="nameInput" class="item-value" placeholder="输入您的称呼" value="{{name}}"/>  
+    </view>
+  </view>
+  <view class="text">
+    <view class="item">
+      <text class="item-title">备注</text>
+      <input bindblur="remarkInput" class="item-value" placeholder="输入备注" value="{{remark}}"/>  
+    </view>
+  </view>
+</view>
+
+<button bindtap="save" class="button" type="primary">保存</button>
+<button bindtap="query" class="button" type="default" wx:if="{{disabled != false}}">更新</button>

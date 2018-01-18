@@ -56,7 +56,7 @@
         <view class="tdcode">{{item.modelcode}}</view>
         <view class="tdname">{{item.name}}</view>
         <view class="tdprice">{{item.price}}</view>
-        <view class="tdamount">{{item.amount}}</view>
+        <view class="tdamount">{{item.dispatchamount}}</view>
     </view>
   </block>
 </view>

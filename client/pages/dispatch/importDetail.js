@@ -31,10 +31,21 @@ Page({
       method: 'GET',
       success: function (result) {
         var modelnamelist = wx.getStorageSync('modelNameList.' + result.data[0].tenantid);
+        if ((modelnamelist == undefined) || (modelnamelist == '')){
+          var tenantlist = wx.getStorageSync('tenantList');
+          for (var x in tenantlist){
+            if (tenantlist[x].tenantid == result.data[0].tenantid){
+              modelnamelist = tenantlist[x].namelist.split(',');
+            }
+          }
+        }
         var tenantStyle = wx.getStorageSync('tenantStyle')[result.data[0].tenantid];
         var stylevaluelist = [];
         for (var x in tenantStyle) {
           var itemlist = wx.getStorageSync('styleValueList.' + result.data[0].tenantid + '.' + tenantStyle[x].styleid);
+          if ((itemlist == undefined) || (itemlist == '')) {
+            itemlist = tenantStyle[x].stylelist.split(',');
+          }
           stylevaluelist[tenantStyle[x].styleid] = itemlist;
         }
         that.setData({
@@ -277,7 +288,7 @@ Page({
           existedModel: true,
           model: opt,
         });
-        updateStyle();
+        that.updateStyle();
         return next(result.data);
       },
       fail: function (err) {
