@@ -10,8 +10,6 @@ App({
           if (res.code) {
             wx.getUserInfo({
               success: function (res) {
-                console.log(res);
-
                 wx.setStorageSync('userInfo', res.userInfo);//存储userInfo  
               }
             });
@@ -21,7 +19,6 @@ App({
               method: 'get', // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
               header: { 'content-type': 'application/json' }, // 设置请求的 header 
               success: function (res) {
-                console.log(res);
                 wx.setStorageSync('loginInfo', res.data[0]);//存储openid和sessionkey
                 wx.setStorageSync('tenantList', res.data[1]);//存储租户列表
                 wx.setStorageSync('tenantStyle', res.data[2]);//存储租户属性

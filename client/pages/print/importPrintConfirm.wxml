@@ -1,22 +1,4 @@
-<view class="area">
-  <view class="item">
-    <text class="item-title">类型</text>
-    <text class="item-value">{{dispatch.dispatchtype == 1 ? '进货' : '转运'}}</text>
-  </view>
-  <view class="item">
-    <text class="item-title">时间</text>
-    <text class="item-value">{{dispatch.createtime}}</text>
-  </view>
-  <view class="item">
-    <text class="item-title">地点</text>
-    <text class="item-value">{{dispatch.tostore}}</text>
-  </view>
-  <view class="item">
-    <text class="item-title">备注</text>
-    <text class="item-value">{{dispatch.remark}}</text>
-  </view>
-</view>
-
+<!--pages/print/importPrintConfirm.wxml-->
 <view class="table">
   <view class="th">
       <view class="tdcode">款号</view>
@@ -37,5 +19,4 @@
     </view>
   </block>
 </view>
-
-<button bindtap="instore" class="button" type="primary">确认入库</button>
+<button bindtap="print" class="button" type="primary" wx:if="{{list.length > 0}}">打印标签</button>

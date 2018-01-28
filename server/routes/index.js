@@ -34,6 +34,12 @@ const controllers = require('../controllers')
 
 
 // --业务消息
+router.get('/print/task', controllers.print.getPrintTask)
+router.post('/print/device', controllers.print.getPrintDevice)
+router.post('/print/queryImportList', controllers.print.queryImportList)
+router.post('/print/addTagTask', controllers.print.addTagTask)
+
+
 router.get('/storage/login', controllers.user.getLogin)
 router.post('/storage/saveUser', controllers.user.save)
 router.post('/storage/userList', controllers.user.queryList)
@@ -45,7 +51,7 @@ router.post('/storage/savePrivilege', controllers.user.savePrivilege)
 router.get('/storage/getModel', controllers.model.query)
 router.post('/storage/addModel', controllers.model.add)
 router.post('/storage/delModel', controllers.model.del)
-router.get('/storage/queryDispatchList', controllers.dispatch.queryDispatchList)
+router.post('/storage/queryDispatchList', controllers.dispatch.queryDispatchList)
 router.get('/storage/queryInstoreList', controllers.dispatch.queryInstoreList)
 router.post('/storage/addDispatchList', controllers.dispatch.add)
 router.post('/storage/delDispatchList', controllers.dispatch.del)
@@ -54,5 +60,5 @@ router.post('/storage/delDispatchDetail', controllers.dispatch.delDetail)
 router.post('/storage/finishDispatch', controllers.dispatch.finishDispatch)
 router.post('/storage/instore', controllers.dispatch.instore)
 router.post('/storage/outstore', controllers.dispatch.outstore)
-router.get('/storage/queryDispatchDetail', controllers.dispatch.queryDetail)
+router.post('/storage/queryDispatchDetail', controllers.dispatch.queryDetail)
 module.exports = router

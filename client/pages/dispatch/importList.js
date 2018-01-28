@@ -21,12 +21,12 @@ Page({
     //获取已有订单列表
     wx.request({
       url: `${config.service.host}/weapp/storage/queryDispatchList`,
-      data: {
-        loginInfo: loginInfo,
-        dispatchtype: 1,
-        privilegeid: 1,
-      },
-      method: 'GET', 
+      data: [loginInfo,
+        {
+          dispatchtype: 1,
+          privilegeid: 1,
+        }],
+      method: 'POST', 
       success: function(result){
         var storeid = new Array();
         var storename = new Array();

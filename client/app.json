@@ -11,7 +11,9 @@
     "pages/store/transferList",
     "pages/store/transferDetail",
     "pages/store/instoreList",
-    "pages/store/instoreConfirm"
+    "pages/store/instoreConfirm",
+    "pages/print/importPrint",
+    "pages/print/importPrintConfirm"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

@@ -14,8 +14,8 @@ const driver = require('knex')({
 
 module.exports = {
   queryDispatchList: async (ctx, next) => {
-    var condition = ctx.query;
-    var loginInfo = JSON.parse(condition.loginInfo);
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
     //查询自己创建的未完成的进货单
     var importList;
     await driver.schema.raw(
@@ -39,7 +39,7 @@ module.exports = {
       and d.createuser = ?\
       and d.finishtime is null\
       order by d.dispatchlistid',
-      [condition.dispatchtype,loginInfo.userid]
+      [arg.dispatchtype,loginInfo.userid]
     ).then(result => {
       importList = result[0]
     })
@@ -53,12 +53,13 @@ module.exports = {
           on p.storeid = s.storeid\
       where p.privilegeid = ?\
       and p.userid = ?',
-      [condition.privilegeid,loginInfo.userid]
+      [arg.privilegeid,loginInfo.userid]
     ).then(result => {
       storelist = result[0];
     })
-
-    ctx.body = [importList,storelist];
+    
+    var s = config.get(loginInfo.openid);
+    ctx.body = [importList,storelist,s];
   },
   queryInstoreList: async (ctx, next) => {
     var condition = ctx.query;
@@ -140,6 +141,9 @@ module.exports = {
     })
   },
   queryDetail: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+
     var dispatch;
     await driver.schema.raw(
       'select d.dispatchlistid,\
@@ -162,7 +166,7 @@ module.exports = {
         left join tenant t\
           on d.tenantid = t.tenantid\
       where d.dispatchlistid = ?',
-      [ctx.query.dispatchid]
+      [arg.dispatchid]
     ).then(result => {
       dispatch = result[0][0];
     })
@@ -181,7 +185,7 @@ module.exports = {
               on s.modelid = m.modelid\
           where s.storeid = ?\
           and s.amount > 0',
-        [ctx.query.dispatchid, dispatch.fromstoreid]
+        [arg.dispatchid, dispatch.fromstoreid]
       ).then(result => {
         dispatchdetail = result[0]
       })
@@ -194,7 +198,7 @@ module.exports = {
         on d.modelid = m.modelid\
       where d.dispatchlistid = ?\
       order by d.modelid',
-        [ctx.query.dispatchid]
+        [arg.dispatchid]
       ).then(result => {
         dispatchdetail = result[0]
       })

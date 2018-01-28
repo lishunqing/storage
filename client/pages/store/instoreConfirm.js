@@ -7,11 +7,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    choose:[
-      { value: '表格', checked: 'true'},
-      { value: '详情'},
-    ],
-    grid:true,
     remark: '',
   },
 
@@ -20,6 +15,7 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
     if (options.id == undefined){
       wx.redirectTo({
         url: "/pages/menu/menu",
@@ -27,11 +23,11 @@ Page({
     }
     wx.request({
       url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
-      data: {
+      data: [loginInfo, {
         dispatchid: options.id,
-      },
-      method: 'GET',
-      success: function (result) {
+      }],
+      method: 'POST',
+      success: function (result) { 
         //检查，有没有这个仓库的权限
         var permissions = wx.getStorageSync('permission');
         var nopermission = true;
@@ -58,18 +54,7 @@ Page({
       }
     })
   },
-  radioChange: function(e){
-    var that = this;
-    if (e.detail.value == that.data.choose[0].value){
-      that.setData({
-        grid:true,
-      });
-    }else{
-      that.setData({
-        grid: false,
-      });
-    }
-  },
+
   remarkInput: function (e) {
     this.setData({
       remark: e.detail.value,

@@ -37,6 +37,11 @@ Page({
       url: "/pages/dispatch/exportList",
     });
   },
+  importPrint: function (e) {
+    wx.navigateTo({
+      url: "/pages/print/importPrint",
+    });
+  },
   instoreList: function (e) {
     wx.navigateTo({
       url: "/pages/store/instoreList",

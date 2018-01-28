@@ -39,6 +39,7 @@ module.exports = {
       } else {
         loginInfo = res;
         sessionkey = res.session_key;
+        config.set(res.openid, [res.session_key, new Date().getTime()]);
       }
     });
     await driver.schema.raw('replace into usersession(openid,sessionkey) values(?,?)', [loginInfo.openid, loginInfo.session_key]);
