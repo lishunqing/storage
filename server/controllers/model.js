@@ -25,12 +25,6 @@ module.exports = {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
     await driver("model").insert(arg).then();
-    await driver.schema.raw(
-      'select * from model where tenantid = ? and modelcode = ?',
-      [arg.tenantid, arg.modelcode]
-    ).then(result => {
-      ctx.body = result[0]
-    })
   },
   del: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;

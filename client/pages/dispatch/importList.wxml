@@ -1,4 +1,4 @@
-<block wx:for="{{list}}" wx:key="{{dispatchlistid}}">
+<block wx:for="{{list}}" wx:key="{{importlistid}}">
   <view class="area">
     <view class="text" bindtap="toDetail" id="{{index}}">
       <view class="item">
@@ -6,8 +6,8 @@
         <text class="item-value">{{item.createtime}}</text>
       </view>
       <view class="item">
-        <text class="item-title">地点</text>
-        <text class="item-value">{{item.tostore}}</text>
+        <text class="item-title">种类</text>
+        <text class="item-value">{{item.tenantname}}</text>
       </view>
     </view>
     <button class="delete" bindtap="delBind" type="warn" id="{{index}}">删除</button>
@@ -21,10 +21,10 @@
 <view class="area">
   <view class="text" width="100%">
     <view class="item">
-      <text class="item-title">地点</text>
-      <picker bindchange="storeChange" class="item-value" value="{{storeindex}}" range="{{storeName}}">  
+      <text class="item-title">种类</text>
+      <picker bindchange="tenantChange" class="item-value" value="{{index}}" range="{{tenantName}}">  
         <view class="picker">  
-          {{storeName[storeindex]}}  
+          {{tenantName[index]}}  
         </view>  
       </picker>  
     </view>

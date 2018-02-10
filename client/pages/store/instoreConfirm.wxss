@@ -106,7 +106,7 @@ page {
   border-right: 1px solid black;
   text-align: center;
 
-  width:17vw;
+  width:19vw;
 }
 
 .tdstyle1 {  
@@ -115,7 +115,7 @@ page {
   border-right: 1px solid black;
   text-align: center;
 
-  width:14vw;
+  width:13vw;
 }
 
 .tdstyle2 {  
@@ -132,7 +132,7 @@ page {
   border-right: 1px solid black;
   text-align: center;
 
-  width:17vw;
+  width:15vw;
 }
 .tdamount {  
   padding: 1vw;

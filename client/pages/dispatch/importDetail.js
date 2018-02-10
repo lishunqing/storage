@@ -4,12 +4,11 @@ var config = require('../../config')
 Page({
 
   data: {
-    dispatchListID: 0,
+    id: 0,
     existedModel: false,
     modelInList: false,
     model: {},
     modelNameList: [],
-    styleValue: [],
     styleValueList: [],
   },
 
@@ -24,7 +23,7 @@ Page({
       });
     }
     that.setData({
-      dispatchListID: options.id,
+      id: options.id,
     })
     that.loadList();
   },
@@ -33,9 +32,9 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
+      url: `${config.service.host}/weapp/storage/queryImportDetail`,
       data: [loginInfo, {
-        dispatchid: that.data.dispatchListID,
+        importlistid: that.data.id,
       }],
       method: 'POST',
       success: function (result) {
@@ -61,7 +60,7 @@ Page({
           modelNameList: modelnamelist,
           styleValueList: stylevaluelist,
           style: tenantStyle,
-          dispatch: result.data[0],
+          importList: result.data[0],
           list: result.data[1],
         })
       },
@@ -87,7 +86,7 @@ Page({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: {
         openid: loginInfo.openid,
-        tenant: that.data.dispatch.tenantid,
+        tenant: that.data.importList.tenantid,
         model: e.detail.value,
       },
       method: 'GET',
@@ -96,17 +95,11 @@ Page({
           var m = result.data;
           m[0].price = parseFloat(m[0].price).toFixed(2);
           m[0].cost = parseFloat(m[0].cost).toFixed(2);
-          //更新styleValue
-          var v = that.data.styleValue;
-          for(var x in that.data.style){
-            v[that.data.style[x].styleid] = m[0]["style" + that.data.style[x].styleid];
-          }
           that.setData({
             model: m[0],
             modellist: m,
             existedModel: true,
             modelInList: false,
-            styleValue:v,
           })
         }
         else {
@@ -140,7 +133,7 @@ Page({
     var m = that.data.model;
     if (e.detail.value) {
       m.price = parseFloat(e.detail.value).toFixed(2);
-      if (price == 'NaN') {
+      if (m.price == 'NaN') {
         m.price = '';
       }
       that.setData({
@@ -240,11 +233,12 @@ Page({
     }
     //提交新的款式
     wx.request({
-      url: `${config.service.host}/weapp/storage/addDispatchDetail`,
+      url: `${config.service.host}/weapp/storage/addImportDetail`,
       data: [loginInfo, {
-        dispatchlistid: that.data.dispatchListID,
+        importlistid: that.data.id,
         modelid: id,
         amount: that.data.amount,
+        cost: that.data.model.cost,
       }],
       method: 'POST',
       header: { 'content-type': 'application/json' },
@@ -261,7 +255,7 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
 
-    var opt = { 'tenantid': that.data.dispatch.tenantid };
+    var opt = { 'tenantid': that.data.importList.tenantid };
     //校验modecode不为空
     if (that.data.model.modelcode == undefined) {
       return '款号不能为空';
@@ -299,14 +293,27 @@ Page({
       header: { 'content-type': 'application/json' },
       success: function (result) {
         //todo:set to existed model,update stylelist and namelist
-        that.setData({
-          existedModel: true,
-          model: opt,
-          modellist: result.data,
-        });
-        that.updateStyle();
-        var id = that.getModelID();
-        return next(id);
+        //重新尝试获取款号
+        wx.request({
+          url: `${config.service.host}/weapp/storage/getModel`,
+          data: {
+            openid: loginInfo.openid,
+            tenant: that.data.importList.tenantid,
+            model: opt.modelcode,
+          },
+          method: 'GET',
+          success: function (result) {
+            that.setData({
+              modellist: result.data,
+            })
+            that.updateStyle();
+            var id = that.getModelID();
+            return next(id);
+            },
+          fail: function (err) {
+            console.log(err);
+          }
+        })
       },
       fail: function (err) {
         console.log(err);
@@ -322,7 +329,7 @@ Page({
           existedModel: true,
           modelInList: true,
           model: that.data.list[x],
-          amount: that.data.list[x].dispatchamount,
+          amount: that.data.list[x].totalamount,
         });
       }
     }
@@ -340,10 +347,10 @@ Page({
           if (sm.confirm) {
             //确认删除条目
             wx.request({
-              url: `${config.service.host}/weapp/storage/delDispatchDetail`,
+              url: `${config.service.host}/weapp/storage/delImportDetail`,
               data: [loginInfo,
                 {
-                  dispatchlistid: that.data.dispatchListID,
+                  importlistid: that.data.id,
                   modelid: that.data.model.modelid,
                 }],
               method: 'POST',
@@ -407,7 +414,7 @@ Page({
   },
   updateStyle: function () {
     var that = this;
-    var item = that.data.modelName;
+    var item = that.data.model.name;
     var itemlist = that.data.modelNameList;
     for (var x in itemlist) {
       if (itemlist[x] == item) {
@@ -420,12 +427,12 @@ Page({
     that.setData({
       modelNameList: itemlist,
     });
-    wx.setStorageSync('modelNameList.' + that.data.dispatch.tenantid, itemlist);
+    wx.setStorageSync('modelNameList.' + that.data.importList.tenantid, itemlist);
 
     itemlist = that.data.styleValueList;
     for(var x in that.data.style){
       var stylelist = itemlist[that.data.style[x].styleid];
-      var style = that.data.styleValue[that.data.style[x].styleid];
+      var style = that.data.model["style" + that.data.style[x].styleid];
 
       for (var y in stylelist) {
         if (stylelist[y] == style) {
@@ -438,7 +445,7 @@ Page({
 
       itemlist[that.data.style[x].styleid] = stylelist;
 
-      wx.setStorageSync('styleValueList.' + that.data.dispatch.tenantid + '.' + that.data.style[x].styleid, stylelist);
+      wx.setStorageSync('styleValueList.' + that.data.importList.tenantid + '.' + that.data.style[x].styleid, stylelist);
     }
     that.setData({
       styleValueList: itemlist,
@@ -449,21 +456,21 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
     wx.showModal({
       title: '提示',
-      content: '确定要完成进货单吗？\n注意：完成进货单后就不能再修改进货单里面的条目和数量了，请再次确认!',
+      content: '确定要完成进货吗？\n注意：完成进货后就不能在到货操作中选择了，请再次确认!',
       success: function (sm) {
         if (sm.confirm) {
           //确认删除货单
           wx.request({
-            url: `${config.service.host}/weapp/storage/finishDispatch`,
+            url: `${config.service.host}/weapp/storage/finishImport`,
             data: [loginInfo,
               {
-                dispatchlistid: that.data.dispatchListID,
+                importlistid: that.data.id,
               }],
             method: 'POST',
             header: { 'content-type': 'application/json' },
             success: function (result) {
               wx.redirectTo({
-                url: "/pages/store/instoreConfirm?id=" + that.data.dispatchListID,
+                url: "/pages/menu/menu",
               });
             },
             fail: function (err) {

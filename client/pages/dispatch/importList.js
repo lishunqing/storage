@@ -5,10 +5,9 @@ Page({
 
   data: {
     list:[],
-    storeID:[],
-    storeName:[],
     tenantID:[],
-    storeindex:0,
+    tenantName:[],
+    index:0,
     remark:'',
   },
 
@@ -20,25 +19,19 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
     //获取已有订单列表
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryDispatchList`,
+      url: `${config.service.host}/weapp/storage/queryImportList`,
       data: [loginInfo,
-        {
-          dispatchtype: 1,
-          privilegeid: 1,
-        }],
+        {}],
       method: 'POST', 
       success: function(result){
-        var storeid = new Array();
-        var storename = new Array();
         var tenantid = new Array();
+        var tenantname = new Array();
         for (var x in result.data[1]) {
-          storeid[x] = result.data[1][x].storeid;
-          storename[x] = result.data[1][x].name;
           tenantid[x] = result.data[1][x].tenantid;
+          tenantname[x] = result.data[1][x].name;
         };
         that.setData({
-          storeID: storeid,
-          storeName: storename,
+          tenantName: tenantname,
           tenantID: tenantid,
           list: result.data[0],
         })
@@ -49,9 +42,9 @@ Page({
     })
   },
 
-  storeChange: function (e) {
+  tenantChange: function (e) {
     this.setData({
-      storeindex:e.detail.value,
+      index:e.detail.value,
     });
   },
 
@@ -73,10 +66,10 @@ Page({
           var data = that.data.list;
           //确认删除货单
           wx.request({
-            url: `${config.service.host}/weapp/storage/delDispatchList`,
+            url: `${config.service.host}/weapp/storage/delImportList`,
             data: [loginInfo,
               {
-                'dispatchlistid': data[id].dispatchlistid,
+                'importlistid': data[id].importlistid,
               }],
             method: 'POST',
             header: { 'content-type': 'application/json' },
@@ -102,12 +95,10 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
     //提交新建进货单
     wx.request({
-      url: `${config.service.host}/weapp/storage/addDispatchList`,
+      url: `${config.service.host}/weapp/storage/addImportList`,
       data: [loginInfo,
         { 
-          dispatchtype: 1, 
-          tenantid: that.data.tenantID[that.data.storeindex],
-          tostore: that.data.storeID[that.data.storeindex],
+          tenantid: that.data.tenantID[that.data.index],
           remark: that.data.remark, 
           createuser: loginInfo.userid,
         }],
@@ -129,7 +120,7 @@ Page({
     var that = this;
     var id = e.currentTarget.id;
     wx.navigateTo({
-      url: "/pages/dispatch/importDetail?id=" + that.data.list[id].dispatchlistid,
+      url: "/pages/dispatch/importDetail?id=" + that.data.list[id].importlistid,
     });
   },
 })

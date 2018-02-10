@@ -79,7 +79,6 @@ page {
 .table {
   margin-top: 20rpx;
   border-top: 3px solid black;
-  border-left: 1px solid black;
   border-bottom: 2px solid black;
   font-size: 3vw;
   width: 100vw;
@@ -90,7 +89,7 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;  
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
   text-align: center;
 }  
 .tr {  
@@ -98,53 +97,46 @@ page {
   background-color: #fff;
   display: flex;
   justify-content: space-between;
+  border-bottom: 1px solid black;
   align-items: center;  
 }  
 .tdcode {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   width:30vw;
 }
 .tdname {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   text-align: center;
-
-  width:17vw;
+  width:20vw;
 }
-
 .tdstyle1 {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   text-align: center;
-
-  width:14vw;
+  width:13vw;
 }
-
 .tdstyle2 {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   text-align: center;
-
-  width:11vw;
+  width:9vw;
 }
 .tdprice {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   text-align: center;
-
-  width:17vw;
+  width:10vw;
 }
 .tdamount {  
   padding: 1vw;
-  border-bottom: 1px solid black;
   border-right: 1px solid black;
   text-align: center;
-
-  width:11vw;
+  width:9vw;
+}
+.tdarrived {  
+  padding: 1vw;
+  text-align: center;
+  width:9vw;
 }

@@ -7,7 +7,7 @@
     </view>
     <view class="item">
       <text class="item-title">名称</text>
-      <input wx:if="{{!existedModel}}" bindblur="nameInput" class="item-value" placeholder="输入或者选择名称" value="{{model.modelcode}}"/>  
+      <input wx:if="{{!existedModel}}" bindblur="nameInput" class="item-value" placeholder="输入或者选择名称" value="{{model.name}}"/>  
       <picker wx:if="{{!existedModel}}" bindchange="nameInput" class="item-picker" id="p" range="{{modelNameList}}">  
         <text>选择</text>
       </picker>
@@ -24,13 +24,12 @@
     </block>
     <view class="item">
       <text class="item-title">成本</text>
-      <input wx:if="{{!existedModel}}" bindblur="costInput" class="item-value" type="digit" placeholder="输入成本价(可选)" value="{{modelCost}}"/>  
-      <text wx:if="{{!existedModel}}" class="item-picker"></text>
-      <text wx:if="{{existedModel}}" class="item-disable">{{model.cost}}</text>
+      <input bindblur="costInput" class="item-value" type="digit" placeholder="输入成本价(可选)" value="{{model.cost}}"/>  
+      <text class="item-picker"></text>
     </view>
     <view class="item">
       <text class="item-title">价格</text>
-      <input wx:if="{{!existedModel}}" bindblur="priceInput" class="item-value" type="digit" placeholder="输入标牌价格" value="{{modelPrice}}"/>  
+      <input wx:if="{{!existedModel}}" bindblur="priceInput" class="item-value" type="digit" placeholder="输入标牌价格" value="{{model.price}}"/>  
       <text wx:if="{{!existedModel}}" class="item-picker"></text>
       <text wx:if="{{existedModel}}" class="item-disable">{{model.price}}</text>
     </view>
@@ -50,7 +49,8 @@
       <view class="tdstyle1">{{style[0].stylename}}</view>
       <view class="tdstyle2">{{style[1].stylename}}</view>
       <view class="tdprice">价格</view>
-      <view class="tdamount">数量</view>
+      <view class="tdamount">进货</view>
+      <view class="tdarrived">到货</view>
   </view>
   <block wx:for="{{list}}" wx:key="{{modelid}}">
     <view class="tr" bindtap="choose" id="{{item.modelid}}">
@@ -59,7 +59,8 @@
         <view class="tdstyle1">{{item.style1}}</view>
         <view class="tdstyle2">{{item.style2}}</view>
         <view class="tdprice">{{item.price}}</view>
-        <view class="tdamount">{{item.dispatchamount}}</view>
+        <view class="tdamount">{{item.totalamount}}</view>
+        <view class="tdarrived">{{item.instoreamount}}</view>
     </view>
   </block>
 </view>

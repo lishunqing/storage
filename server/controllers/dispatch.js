@@ -13,6 +13,136 @@ const driver = require('knex')({
 })
 
 module.exports = {
+  queryImportList: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+    //查询自己创建的未完成的进货单
+    var importList;
+    await driver.schema.raw(
+      'select i.importlistid,\
+              i.tenantid,\
+              t.name tenantname,\
+              IFNULL(i.remark,"") remark,\
+              DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              i.createuser\
+      from importlist i\
+        left join tenant t\
+          on i.tenantid = t.tenantid\
+      where i.createuser = ?\
+      and i.finishtime is null\
+      order by i.importlistid',
+      [loginInfo.userid]
+    ).then(result => {
+      importList = result[0]
+    })
+
+    //查询自己有权限的店铺对应的租户
+    var tenantlist;
+    await driver.schema.raw(
+      'select t.*\
+      from tenant t\
+      where t.tenantid > 0\
+      and exists(\
+        select 1\
+        from permission p, store s\
+        where p.privilegeid = 1\
+        and p.userid = ?\
+        and p.storeid = s.storeid\
+        and s.tenantid = t.tenantid)',
+      [loginInfo.userid]
+    ).then(result => {
+      tenantlist = result[0];
+    })
+    ctx.body = [importList, tenantlist];
+  },
+  addImportList: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+
+    //todo 检查loginInfo中有没有添加派遣单的权限。
+
+    await driver('importlist').insert(arg).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  delImportList: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'delete from importlist where importlistid = ?', [arg.importlistid]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  queryImportDetail: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+
+    var importlist;
+    await driver.schema.raw(
+      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
+      from importlist i\
+        left join tenant t\
+          on i.tenantid = t.tenantid\
+      where i.importlistid = ?',
+      [arg.importlistid]
+    ).then(result => {
+      importlist = result[0][0];
+    })
+
+    var importdetail;
+    await driver.schema.raw(
+      'select i.totalamount,\
+            i.cost importcost,\
+            i.instoreamount,\
+            m.*\
+      from importdetail i\
+        left join model m\
+          on i.modelid = m.modelid\
+      where i.importlistid = ?\
+      order by i.modelid',
+      [arg.importlistid]
+    ).then(result => {
+      importdetail = result[0]
+    })
+    ctx.body = [importlist, importdetail];
+  },
+  addImportDetail: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'insert into importdetail(importlistid,modelid,totalamount,cost,instoreamount) values (?,?,?,?,0) on duplicate key update totalamount = ?,cost = ?', [
+        arg.importlistid,
+        arg.modelid,
+        arg.amount,
+        arg.cost,
+        arg.amount,
+        arg.cost,
+      ]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  delImportDetail: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'delete from importdetail where importlistid = ? and modelid = ?', [arg.importlistid, arg.modelid]
+    ).then(result => {
+      ctx.body = result[0]
+    })
+  },
+  finishImport: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+
+    await driver.schema.raw(
+      'update importlist set finishtime = CURRENT_TIMESTAMP where importlistid = ?', [
+        arg.importlistid,
+      ]).then(result => {
+        ctx.body = result[0]
+      })
+  },
   queryDispatchList: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];

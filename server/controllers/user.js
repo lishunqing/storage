@@ -42,7 +42,6 @@ module.exports = {
         config.set(res.openid, [res.session_key, new Date().getTime()]);
       }
     });
-    await driver.schema.raw('replace into usersession(openid,sessionkey) values(?,?)', [loginInfo.openid, loginInfo.session_key]);
 
     await driver.schema.raw('select * from user where openid = ?', [loginInfo.openid]).then(result => {
       loginInfo.session_key = sessionkey;
