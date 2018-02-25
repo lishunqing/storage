@@ -59,6 +59,7 @@ router.post('/storage/addImportDetail', controllers.dispatch.addImportDetail)
 router.post('/storage/delImportDetail', controllers.dispatch.delImportDetail)
 router.post('/storage/queryImportDetail', controllers.dispatch.queryImportDetail)
 router.post('/storage/finishImport', controllers.dispatch.finishImport)
+router.post('/storage/addArrive', controllers.store.addArrive)
 
 
 router.post('/storage/queryDispatchList', controllers.dispatch.queryDispatchList)

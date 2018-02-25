@@ -64,4 +64,3 @@
     </view>
   </block>
 </view>
-<button bindtap="finish" class="button" type="primary">完成进货单</button>

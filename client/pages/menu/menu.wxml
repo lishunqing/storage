@@ -1,8 +1,8 @@
 <!--menu.wxml-->
 <view class="area" wx:if="{{permissions[1]}}">
     <button bindtap="importList" class="button" type="default">进货</button>
+    <button bindtap="arriveList" class="button" type="default">到货</button>
     <button bindtap="exportList" class="button" type="default">次品返厂</button>
-
 </view>
 
 <view class="area" wx:if="{{permissions[4]}}">

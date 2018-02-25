@@ -1,4 +1,3 @@
-/* pages/print/importPrintConfirm.wxss */
 
 page {
   background: #f6f6f6;
@@ -6,8 +5,60 @@ page {
   flex-direction: column;
   justify-content: flex-start;
 }
-
-
+.area {
+  margin-top: 20rpx;
+  width: 100%;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: none;
+  border-right: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.text {
+  background: #fff;
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+.item {
+  font-size: 17px;
+  width: 100%;
+  background: #fff;
+  border: 8px;
+  border-left: none;
+  border-right: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.item-title {
+  width: 40px;
+  margin: 20rpx;
+  align-items: middle;
+}
+.item-value {
+  color: #007aff;
+  flex-grow: 2;
+}
+.item-disable {
+  color: grey;
+  flex-grow: 2;
+}
+.item-picker {
+  width: 40px;
+  margin: 20rpx;
+  color: #f70;
+}
+.delete {
+  font-size: 17px;
+  height: 100%;
+  align-items: right;
+}
 .button {
   margin-top: 20rpx;
   font-size: 17px;
@@ -15,7 +66,6 @@ page {
   width: 100%;
   align-items: center;
 }
-
 .table {
   margin-top: 20rpx;
   border-top: 3px solid black;
@@ -69,13 +119,13 @@ page {
   text-align: center;
   width:10vw;
 }
-.tdarrived {  
+.tdamount {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
   width:9vw;
 }
-.tdamount {  
+.tdarrived {  
   padding: 1vw;
   text-align: center;
   width:9vw;

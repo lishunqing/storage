@@ -451,36 +451,4 @@ Page({
       styleValueList: itemlist,
     });
   },
-  finish: function () {
-    var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
-    wx.showModal({
-      title: '提示',
-      content: '确定要完成进货吗？\n注意：完成进货后就不能在到货操作中选择了，请再次确认!',
-      success: function (sm) {
-        if (sm.confirm) {
-          //确认删除货单
-          wx.request({
-            url: `${config.service.host}/weapp/storage/finishImport`,
-            data: [loginInfo,
-              {
-                importlistid: that.data.id,
-              }],
-            method: 'POST',
-            header: { 'content-type': 'application/json' },
-            success: function (result) {
-              wx.redirectTo({
-                url: "/pages/menu/menu",
-              });
-            },
-            fail: function (err) {
-              console.log(err);
-            }
-          })
-        } else if (sm.cancel) {
-          console.log('用户点击取消')
-        }
-      }
-    })
-  },
 })

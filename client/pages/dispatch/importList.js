@@ -1,12 +1,10 @@
 var config = require('../../config')
-
-// importList.js 
 Page({
 
   data: {
     list:[],
-    tenantID:[],
-    tenantName:[],
+    storeID:[],
+    storeName:[],
     index:0,
     remark:'',
   },
@@ -24,15 +22,15 @@ Page({
         {}],
       method: 'POST', 
       success: function(result){
-        var tenantid = new Array();
-        var tenantname = new Array();
+        var storeid = new Array();
+        var storename = new Array();
         for (var x in result.data[1]) {
-          tenantid[x] = result.data[1][x].tenantid;
-          tenantname[x] = result.data[1][x].name;
+          storeid[x] = result.data[1][x].storeid;
+          storename[x] = result.data[1][x].name;
         };
         that.setData({
-          tenantName: tenantname,
-          tenantID: tenantid,
+          storeName: storename,
+          storeID: storeid,
           list: result.data[0],
         })
       },
@@ -42,7 +40,7 @@ Page({
     })
   },
 
-  tenantChange: function (e) {
+  storeChange: function (e) {
     this.setData({
       index:e.detail.value,
     });
@@ -98,7 +96,7 @@ Page({
       url: `${config.service.host}/weapp/storage/addImportList`,
       data: [loginInfo,
         { 
-          tenantid: that.data.tenantID[that.data.index],
+          storeid: that.data.storeID[that.data.index],
           remark: that.data.remark, 
           createuser: loginInfo.userid,
         }],

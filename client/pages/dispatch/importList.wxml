@@ -6,8 +6,8 @@
         <text class="item-value">{{item.createtime}}</text>
       </view>
       <view class="item">
-        <text class="item-title">种类</text>
-        <text class="item-value">{{item.tenantname}}</text>
+        <text class="item-title">地点</text>
+        <text class="item-value">{{item.storename}}</text>
       </view>
     </view>
     <button class="delete" bindtap="delBind" type="warn" id="{{index}}">删除</button>
@@ -21,10 +21,10 @@
 <view class="area">
   <view class="text" width="100%">
     <view class="item">
-      <text class="item-title">种类</text>
-      <picker bindchange="tenantChange" class="item-value" value="{{index}}" range="{{tenantName}}">  
+      <text class="item-title">地点</text>
+      <picker bindchange="storeChange" class="item-value" value="{{index}}" range="{{storeName}}">  
         <view class="picker">  
-          {{tenantName[index]}}  
+          {{storeName[index]}}  
         </view>  
       </picker>  
     </view>

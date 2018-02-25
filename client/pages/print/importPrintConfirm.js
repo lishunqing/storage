@@ -31,6 +31,9 @@ Page({
       method: 'POST',
       success: function (result) {
         var tenantStyle = wx.getStorageSync('tenantStyle')[result.data[0].tenantid];
+        for (var x in result.data[1]) {
+          result.data[1][x].printamount = 0;
+        }
         that.setData({
           dispatchListID: options.id,
           style: tenantStyle,
@@ -43,8 +46,29 @@ Page({
       }
     })  
   },
-
-  print: function(e){
+  add: function (e) {
+    var that = this;
+    var data = that.data.list;
+    var id = e.currentTarget.id;
+    if (data[id].printamount < data[id].dispatchamount) {
+      ++data[id].printamount;
+      that.setData({
+        list: data,
+      })
+    }
+  },
+  min: function (e) {
+    var that = this;
+    var data = that.data.list;
+    var id = e.currentTarget.id;
+    if (data[id].printamount > 0) {
+      --data[id].printamount;
+      that.setData({
+        list: data,
+      })
+    }
+  },
+  printall: function(e){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     var list = that.data.list;
@@ -78,5 +102,86 @@ Page({
         console.log(err);
       }
     })  
-  }
+  },
+  printlist: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    var list = that.data.list;
+    for (var x in list) {
+      list[x].amount = list[x].dispatchamount;
+    }
+    var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
+    var id = wx.getStorageSync('deviceID');
+
+    wx.request({
+      url: `${config.service.host}/weapp/print/addTagTask`,
+      data: [loginInfo, {
+        deviceid: id,
+        tagTask: {
+          type: 2,
+          model: list,
+          style: style,
+        }
+      }],
+      method: 'POST',
+      success: function (result) {
+        wx.showToast({
+          title: '已提交',
+          icon: 'success',
+          duration: 2000
+        })
+        setTimeout(function () {
+          wx.redirectTo({
+            url: "/pages/menu/menu",
+          });
+        }, 500);
+      },
+      fail: function (err) {
+        console.log(err);
+      }
+    })
+  },
+  print: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    var list = that.data.list;
+    var printlist = [];
+    for (var x in list) {
+      if (list[x].printamount > 0) {
+        var i = list[x];
+        i.amount = i.printamount;
+        printlist.push(i);
+      }
+    }
+    var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
+    var id = wx.getStorageSync('deviceID');
+
+    wx.request({
+      url: `${config.service.host}/weapp/print/addTagTask`,
+      data: [loginInfo, {
+        deviceid: id,
+        tagTask: {
+          type: 1,
+          model: printlist,
+          style: style,
+        }
+      }],
+      method: 'POST',
+      success: function (result) {
+        wx.showToast({
+          title: '已提交',
+          icon: 'success',
+          duration: 2000
+        })
+        setTimeout(function () {
+          wx.redirectTo({
+            url: "/pages/menu/menu",
+          });
+        }, 500);
+      },
+      fail: function (err) {
+        console.log(err);
+      }
+    })
+  },
 })

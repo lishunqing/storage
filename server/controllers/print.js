@@ -30,7 +30,7 @@ module.exports = {
       task.devicetime = new Date().getTime();
       if (task.task){
         //清空任务
-        //task.task = undefined;
+        task.task = undefined;
       }
       config.set(id, task);
     }else{

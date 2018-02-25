@@ -1,5 +1,5 @@
 <block wx:for="{{list}}" wx:key="{{dispatchlistid}}">
-  <view bindtap="toDetail" id="{{index}}">
+  <view class="area" bindtap="toDetail" id="{{index}}">
     <view class="item">
       <text class="item-title">类型</text>
       <text class="item-value">{{item.dispatchtype == 1 ? '进货' : '转运'}}</text>

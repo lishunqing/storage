@@ -1,0 +1,18 @@
+<block wx:for="{{list}}" wx:key="{{importlistid}}">
+  <view class="area">
+    <view class="text" bindtap="toDetail" id="{{index}}">
+      <view class="item">
+        <text class="item-title">时间</text>
+        <text class="item-value">{{item.createtime}}</text>
+      </view>
+      <view class="item">
+        <text class="item-title">地点</text>
+        <text class="item-value">{{item.storename}}</text>
+      </view>
+      <view class="item">
+        <text class="item-title">备注</text>
+        <text class="item-value">{{item.remark}}</text>
+      </view>
+    </view>
+  </view>
+</block>

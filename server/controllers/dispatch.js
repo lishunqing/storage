@@ -20,14 +20,18 @@ module.exports = {
     var importList;
     await driver.schema.raw(
       'select i.importlistid,\
-              i.tenantid,\
+              i.storeid,\
+              s.name storename,\
+              s.tenantid,\
               t.name tenantname,\
               IFNULL(i.remark,"") remark,\
               DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
               i.createuser\
       from importlist i\
+        left join store s\
+          on i.storeid = s.storeid\
         left join tenant t\
-          on i.tenantid = t.tenantid\
+          on s.tenantid = t.tenantid\
       where i.createuser = ?\
       and i.finishtime is null\
       order by i.importlistid',
@@ -37,23 +41,14 @@ module.exports = {
     })
 
     //查询自己有权限的店铺对应的租户
-    var tenantlist;
+    var storelist;
     await driver.schema.raw(
-      'select t.*\
-      from tenant t\
-      where t.tenantid > 0\
-      and exists(\
-        select 1\
-        from permission p, store s\
-        where p.privilegeid = 1\
-        and p.userid = ?\
-        and p.storeid = s.storeid\
-        and s.tenantid = t.tenantid)',
+      'select s.* from store s where s.storeid > 0 and exists( select 1 from permission p where p.privilegeid = 1 and p.userid = ? and p.storeid = s.storeid)',
       [loginInfo.userid]
     ).then(result => {
-      tenantlist = result[0];
+      storelist = result[0];
     })
-    ctx.body = [importList, tenantlist];
+    ctx.body = [importList, storelist];
   },
   addImportList: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
@@ -80,10 +75,12 @@ module.exports = {
 
     var importlist;
     await driver.schema.raw(
-      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
+      'select i.importlistid,i.storeid,s.name storename,s.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
       from importlist i\
+        left join store s\
+          on i.storeid = s.storeid\
         left join tenant t\
-          on i.tenantid = t.tenantid\
+          on s.tenantid = t.tenantid\
       where i.importlistid = ?',
       [arg.importlistid]
     ).then(result => {
