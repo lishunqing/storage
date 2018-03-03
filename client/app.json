@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/menu/menu",
+    "pages/model/maintain",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
     "pages/dispatch/arriveList",

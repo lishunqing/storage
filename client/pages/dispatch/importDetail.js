@@ -72,7 +72,6 @@ Page({
 
   codeInput: function (e) {
     var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
 
     if (!e.detail.value) {
       that.setData({
@@ -81,18 +80,22 @@ Page({
       })
       return;
     }
+    that.queryCode(e.detail.value);
+  },
+  queryCode:function(code,next){
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
     //尝试获取款号
     wx.request({
       url: `${config.service.host}/weapp/storage/getModel`,
-      data: {
-        openid: loginInfo.openid,
+      data: [loginInfo, {
         tenant: that.data.importList.tenantid,
-        model: e.detail.value,
-      },
-      method: 'GET',
+        model: code,
+      }],
+      method: 'POST',
       success: function (result) {
-        if (result.data.length > 0) {
-          var m = result.data;
+        if (result.data[0].length > 0) {
+          var m = result.data[0];
           m[0].price = parseFloat(m[0].price).toFixed(2);
           m[0].cost = parseFloat(m[0].cost).toFixed(2);
           that.setData({
@@ -107,8 +110,12 @@ Page({
             model: { modelcode: e.detail.value },
             existedModel: false,
             modelInList: false,
-            modellist:[],
+            modellist: [],
           })
+        }
+        if (next){
+          var id = that.getModelID();
+          return that.createDetail(id);
         }
       },
       fail: function (err) {
@@ -292,28 +299,9 @@ Page({
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
-        //todo:set to existed model,update stylelist and namelist
-        //重新尝试获取款号
-        wx.request({
-          url: `${config.service.host}/weapp/storage/getModel`,
-          data: {
-            openid: loginInfo.openid,
-            tenant: that.data.importList.tenantid,
-            model: opt.modelcode,
-          },
-          method: 'GET',
-          success: function (result) {
-            that.setData({
-              modellist: result.data,
-            })
-            that.updateStyle();
-            var id = that.getModelID();
-            return next(id);
-            },
-          fail: function (err) {
-            console.log(err);
-          }
-        })
+        //提交款式成功以后重新查询款式
+        that.updateStyle();
+        return that.queryCode(opt.modelcode,next);
       },
       fail: function (err) {
         console.log(err);

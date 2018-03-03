@@ -48,9 +48,11 @@ router.post('/storage/queryPrivilege', controllers.user.queryPrivilege)
 router.post('/storage/savePrivilege', controllers.user.savePrivilege)
 
 
-router.get('/storage/getModel', controllers.model.query)
+router.post('/storage/getModel', controllers.model.query)
 router.post('/storage/addModel', controllers.model.add)
 router.post('/storage/delModel', controllers.model.del)
+router.post('/storage/modModel', controllers.model.mod)
+
 
 router.post('/storage/queryImportList', controllers.dispatch.queryImportList)
 router.post('/storage/addImportList', controllers.dispatch.addImportList)

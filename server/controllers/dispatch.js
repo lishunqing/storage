@@ -32,7 +32,11 @@ module.exports = {
           on i.storeid = s.storeid\
         left join tenant t\
           on s.tenantid = t.tenantid\
-      where i.createuser = ?\
+      where i.storeid in (\
+      select storeid\
+      from permission\
+      where privilegeid = 2\
+      and userid = ?)\
       and i.finishtime is null\
       order by i.importlistid',
       [loginInfo.userid]

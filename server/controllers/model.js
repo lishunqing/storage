@@ -14,11 +14,13 @@ const driver = require('knex')({
 
 module.exports = {
   query: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
     await driver.schema.raw(
       'select * from model where tenantid = ? and modelcode = ?',
-      [ctx.query.tenant,ctx.query.model]
+      [arg.tenant, arg.model]
     ).then(result => {
-      ctx.body = result[0]
+      ctx.body = result
     })
   },
   add: async (ctx, next) => {
@@ -32,7 +34,14 @@ module.exports = {
     await driver.schema.raw(
       'delete from model where modelid = ?', [arg.modelid]
     ).then(result => {
-      ctx.body = result[0];
+      ctx.body = result;
     })
+  },
+  mod: async (ctx, next) => {
+    var openid = ctx.request.body[0].openid;
+    var arg = ctx.request.body[1];
+    await driver("model").where('modelid', '=', arg.modelid).update(arg).then(result => {
+      ctx.body = result;
+    });
   },
 }

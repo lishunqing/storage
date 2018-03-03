@@ -71,7 +71,7 @@ module.exports = {
 
     var permission = {};
     if (loginInfo.userid != undefined){
-      await driver.schema.raw('select privilegeid,storeid from permission where userid = ?', [loginInfo.userid]).then(result => {
+      await driver.schema.raw('select privilegeid,p.storeid,s.name storename,t.tenantid,t.name tenantname from permission p left join store s on p.storeid = s.storeid left join tenant t on s.tenantid = t.tenantid where userid = ?', [loginInfo.userid]).then(result => {
         permission = result[0]
       })
     }

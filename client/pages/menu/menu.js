@@ -55,6 +55,11 @@ Page({
     });
   },
 
+  model: function (e) {
+    wx.navigateTo({
+      url: "/pages/model/maintain",
+    });
+  },
   importList: function(e){
     wx.navigateTo({
       url: "/pages/dispatch/importList",
