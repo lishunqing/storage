@@ -80,6 +80,11 @@ Page({
       url: "/pages/print/importPrint",
     });
   },
+  targetPrint: function (e) {
+    wx.navigateTo({
+      url: "/pages/model/print",
+    });
+  },
   instoreList: function (e) {
     wx.navigateTo({
       url: "/pages/store/instoreList",
@@ -98,6 +103,11 @@ Page({
   userList: function (e) {
     wx.navigateTo({
       url: "/pages/menu/userList",
+    });
+  },
+  sell: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/sell",
     });
   },
 })

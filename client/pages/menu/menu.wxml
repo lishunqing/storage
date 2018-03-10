@@ -8,7 +8,13 @@
 
 <view class="area" wx:if="{{permissions[4]}}">
     <button bindtap="importPrint" class="button" type="default">进货标牌打印</button>
-    <button bindtap="exportList" class="button" type="default">库存标牌补打</button>
+    <button bindtap="targetPrint" class="button" type="default">库存标牌补打</button>
+
+</view>
+
+<view class="area" wx:if="{{permissions[3]}}">
+    <button bindtap="sell" class="button" type="default">销售</button>
+    <button bindtap="sell" class="button" type="default">退货</button>
 
 </view>
 

@@ -1,29 +1,30 @@
-
 page {
-  background: #f6f6f6;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+    background: #F6F6F6;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 .area {
-  margin-top: 20rpx;
-  width: 100vw;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-left: none;
-  border-right: none;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    margin-top: 20rpx;
+    width: 100%;
+    background: #FFF;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-left: none;
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .text {
-  background: #fff;
-  width: 100%;
-  border-left: none;
-  border-right: none;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
+    margin: 20rpx;
+    background: #FFF;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 2;
 }
 .item {
   font-size: 17px;

@@ -2,6 +2,7 @@
   "pages": [
     "pages/menu/menu",
     "pages/model/maintain",
+    "pages/model/print",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
     "pages/dispatch/arriveList",
@@ -14,6 +15,7 @@
     "pages/store/transferDetail",
     "pages/store/instoreList",
     "pages/store/instoreConfirm",
+    "pages/sell/sell",
     "pages/menu/userInfo",
     "pages/menu/userList",
     "pages/menu/userPermission"

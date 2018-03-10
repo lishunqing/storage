@@ -39,6 +39,9 @@ router.post('/print/device', controllers.print.getPrintDevice)
 router.post('/print/queryImportList', controllers.print.queryImportList)
 router.post('/print/addTagTask', controllers.print.addTagTask)
 
+router.post('/store/query', controllers.store.query)
+router.post('/store/addsell', controllers.store.addsell)
+router.post('/store/querysell', controllers.store.querysell)
 
 router.get('/storage/login', controllers.user.getLogin)
 router.post('/storage/saveUser', controllers.user.save)

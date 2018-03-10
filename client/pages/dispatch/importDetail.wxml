@@ -39,7 +39,7 @@
       <text class="item-picker"></text>
     </view>
     <button bindtap="addDetail" class="button" type="primary">{{modelInList ? '更新进货数量':'新的进货条目'}}</button>
-    <button bindtap="delDetail" class="button" type="warn" wx:if="{{existedModel}}" id="{{modelInList ? 'd':'m'}}">{{modelInList ? '删除进货条目':'删除款式'}}</button>
+    <button bindtap="delDetail" class="button" type="warn" wx:if="{{modelInList}}">删除进货条目</button>
   </view>
 </view>
 <view class="table">

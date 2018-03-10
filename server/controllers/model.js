@@ -16,12 +16,21 @@ module.exports = {
   query: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;
     var arg = ctx.request.body[1];
-    await driver.schema.raw(
-      'select * from model where tenantid = ? and modelcode = ?',
-      [arg.tenant, arg.model]
-    ).then(result => {
-      ctx.body = result
-    })
+    if (arg.exactly){
+      await driver.schema.raw(
+        'select * from model where tenantid = ? and modelcode = ?',
+        [arg.tenant, arg.model]
+      ).then(result => {
+        ctx.body = result
+      })
+    }else{
+      await driver.schema.raw(
+        'select * from model where tenantid = ? and modelcode like ?',
+        [arg.tenant, arg.model + '%']
+      ).then(result => {
+        ctx.body = result
+      })
+    }
   },
   add: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;

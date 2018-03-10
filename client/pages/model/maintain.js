@@ -1,6 +1,5 @@
 var config = require('../../config')
 
-// importList.js
 Page({
 
   data: {
@@ -19,10 +18,7 @@ Page({
    */
   onLoad: function (options) {
     var that = this
-    var id = wx.getStorageSync('deviceID');
-    if (id) {
-      that.getDevice(id);
-    }
+
     var permission = wx.getStorageSync('permission');
     var tenantIDList = [];
     var tenantNameList = [];
@@ -46,71 +42,8 @@ Page({
       tenantIDList: tenantIDList,
       tenantNameList: tenantNameList,
     })
-    var e = {detail:{value:0}};
-    that.tenantInput(e);
-  },
-  getDevice: function (id) {
-    var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
-    wx.request({
-      url: `${config.service.host}/weapp/print/device`,
-      data: [loginInfo, {
-        deviceid: id,
-        connected: false,
-      }],
-      method: 'POST',
-      success: function (result) {
-        if (result.data.devicetime == undefined) {
-          that.setData({
-            status: "非法的设备。ID:" + id,
-            deviceID: "N/A",
-          })
-          return;
-        } else {
-          wx.setStorageSync('deviceID', id);
-          if (parseInt(result.data.servertime) - parseInt(result.data.devicetime) < parseInt(result.data.outtime)) {
-            that.setData({
-              status: "设备(" + id + ")已连接。",
-              deviceID: id,
-              connected: true,
-            })
-          } else {
-            that.setData({
-              status: "设备(" + id + ")已断线。时间：" + Math.round((parseInt(result.data.servertime) - parseInt(result.data.devicetime)) / 1000),
-              deviceID: id,
-              connected: false,
-            })
-          }
-        }
-      },
-      fail: function (err) {
-        console.log(err);
-      }
-    })
-  },
-  connectPrint: function (e) {
-    var that = this;
-    wx.scanCode({
-      onlyFromCamera: true,
-      scanType: ['qrCode'],
-      success: (res) => {
-        that.getDevice(res.result);
-        that.setData({
-          deviceID: res.result
-        })
-      },
-      fail: (res) => {
-        console.log(res);
-        wx.showToast({
-          title: '没有二维码',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      complete: (res) => {
-      },
-    });
 
+    that.tenantInput({ detail: { value: 0 } });
   },
   tenantInput: function (e) {
     var that = this;

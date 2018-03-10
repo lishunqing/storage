@@ -99,11 +99,17 @@ module.exports = {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
 
-    await driver.schema.raw('select * from user where userid != ? and userid > 0', [
-      loginInfo.userid
-    ]).then(result => {
-      ctx.body = result[0];
-    });
+    if (loginInfo.userid == 0){
+      await driver.schema.raw('select * from user', []).then(result => {
+        ctx.body = result[0];
+      });
+    }else{
+      await driver.schema.raw('select * from user where userid != ? and userid > 0', [
+        loginInfo.userid
+      ]).then(result => {
+        ctx.body = result[0];
+      });
+    }
   },
   disable: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];

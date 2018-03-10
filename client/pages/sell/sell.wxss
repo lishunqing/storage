@@ -54,11 +54,6 @@ page {
   margin: 20rpx;
   color: #f70;
 }
-.delete {
-  font-size: 17px;
-  height: 100%;
-  align-items: right;
-}
 .button {
   margin-top: 20rpx;
   font-size: 17px;
@@ -95,30 +90,48 @@ page {
 .tdcode {  
   padding: 1vw;
   border-right: 1px solid black;
-  width:30vw;
+  width:25vw;
 }
 .tdname {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  width:20vw;
+  width:16vw;
 }
 .tdstyle1 {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  width:13vw;
+  width:10vw;
 }
 .tdstyle2 {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  width:9vw;
+  width:7.5vw;
 }
-.tdprice {  
+.tdamount {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
   width:10vw;
 }
 
+.tdprice {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:7.5vw;
+}
+.tddate {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:14vw;
+}
+.tdtime {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:10vw;
+}

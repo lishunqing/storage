@@ -24,9 +24,9 @@ Page({
       });
     }
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryDispatchDetail`,
+      url: `${config.service.host}/weapp/storage/queryImportDetail`,
       data: [loginInfo, {
-        dispatchid: options.id,
+        importlistid: options.id,
       }],
       method: 'POST',
       success: function (result) {
@@ -50,7 +50,7 @@ Page({
     var that = this;
     var data = that.data.list;
     var id = e.currentTarget.id;
-    if (data[id].printamount < data[id].dispatchamount) {
+    if (data[id].printamount < data[id].totalamount) {
       ++data[id].printamount;
       that.setData({
         list: data,
@@ -73,7 +73,7 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
     var list = that.data.list;
     for(var x in list){
-      list[x].amount = list[x].dispatchamount;
+      list[x].amount = list[x].totalamount;
     }
     var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
     var id = wx.getStorageSync('deviceID');

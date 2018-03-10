@@ -1,4 +1,10 @@
 <view class="area">
+    <view class="text" bindtap="connectPrint">
+    {{status}}
+    </view>
+</view>
+
+<view class="area" wx:if="{{connected}}">
   <view class="text" width="100%">
     <view class="item" wx:if="{{tenantNameList.length > 1}}">
       <text class="item-title">类型</text>
@@ -34,32 +40,29 @@
 
     <view class="item" wx:if="{{choosed}}">
       <text class="item-title">名称</text>
-      <input bindblur="nameInput" class="item-value" placeholder="输入或者选择名称" value="{{model.name}}"/>  
-      <picker bindchange="nameInput" class="item-picker" id="p" range="{{modelNameList}}">  
-        <text>选择</text>
-      </picker>
+      <text class="item-disable">{{model.name}}</text>
+      <text class="item-picker"/>
     </view>
     <block wx:for="{{style}}" wx:key="{{styleid}}" wx:if="{{choosed}}">
-    <view class="item">
-      <text class="item-title">{{item.stylename}}</text>
-      <input bindblur="styleInput" class="item-value" id="{{item.styleid}}" placeholder="{{item.styleplaceholder}}" value="{{model['style' + item.styleid]}}"/>  
-      <picker bindchange="stylePicker" class="item-picker" id="{{item.styleid}}" range="{{styleValueList[item.styleid]}}"> 
-        <text>选择</text>  
-      </picker>  
-    </view>
+      <view class="item">
+        <text class="item-title">{{item.stylename}}</text>
+        <text class="item-disable">{{model['style' + item.styleid]}}</text>
+        <text class="item-picker"/>
+      </view>
     </block>
     <view class="item" wx:if="{{choosed}}">
-      <text class="item-title">成本</text>
-      <input bindblur="costInput" class="item-value" type="digit" placeholder="输入成本价(可选)" value="{{model.cost}}"/>  
-      <text class="item-picker"></text>
-    </view>
-    <view class="item" wx:if="{{choosed}}">
       <text class="item-title">价格</text>
-      <input bindblur="priceInput" class="item-value" type="digit" placeholder="输入标牌价格" value="{{model.price}}"/>  
+      <text class="item-disable">{{model.price}}</text>
+      <text class="item-picker"/>
+    </view>
+
+    <view class="item" wx:if="{{choosed}}">
+      <text class="item-title">数量</text>
+      <input bindblur="amountInput" class="item-value" type="number" placeholder="输入打印数量" value="{{amount}}"/>  
       <text class="item-picker"></text>
     </view>
-    <button wx:if="{{choosed}}" bindtap="updateModel" class="button" type="primary">更新款式</button>
-    <button wx:if="{{choosed}}" bindtap="deleteModel" class="button" type="primary">删除款式</button>
+
+    <button wx:if="{{choosed}}" bindtap="print" class="button" type="primary">打印</button>    
   </view>
 </view>
-
+  

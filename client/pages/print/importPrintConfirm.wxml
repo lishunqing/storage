@@ -6,7 +6,7 @@
       <view class="tdstyle1">{{style[0].stylename}}</view>
       <view class="tdstyle2">{{style[1].stylename}}</view>
       <view class="tdprice">价格</view>
-      <view class="tdarrived">到货</view>
+      <view class="tdarrived">进货</view>
       <view class="tdamount">打印</view>
   </view>
   <block wx:for="{{list}}" wx:key="{{modelid}}">
@@ -16,7 +16,7 @@
       <view class="tdstyle1">{{item.style1}}</view>
       <view class="tdstyle2">{{item.style2}}</view>
       <view class="tdprice">{{item.price}}</view>
-      <view class="tdarrived" bindtap="min" id="{{index}}">{{item.dispatchamount}}</view>
+      <view class="tdarrived" bindtap="min" id="{{index}}">{{item.totalamount}}</view>
       <view class="tdamount" bindtap="add" id="{{index}}">{{item.printamount}}</view>
     </view>
   </block>

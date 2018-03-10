@@ -91,6 +91,7 @@ Page({
       data: [loginInfo, {
         tenant: that.data.importList.tenantid,
         model: code,
+        exactly: true,
       }],
       method: 'POST',
       success: function (result) {
@@ -325,80 +326,47 @@ Page({
   delDetail: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    console.log(that.data.modellist);
-    if (e.currentTarget.id == 'd') {
-      //删除条目
-      wx.showModal({
-        title: '提示',
-        content: '确定要删除这个进货条目吗？\r\n款号：' + that.data.model.modelcode,
-        success: function (sm) {
-          if (sm.confirm) {
-            //确认删除条目
-            wx.request({
-              url: `${config.service.host}/weapp/storage/delImportDetail`,
-              data: [loginInfo,
-                {
-                  importlistid: that.data.id,
-                  modelid: that.data.model.modelid,
-                }],
-              method: 'POST',
-              header: { 'content-type': 'application/json' },
-              success: function (result) {
-                var data = that.data.list;
-                for (var x in data) {
-                  if (data[x].modelid == that.data.model.modelid) {
-                    data.splice(x, 1);
-                    break;
-                  }
+    //删除条目
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除这个进货条目吗？\r\n款号：' + that.data.model.modelcode,
+      success: function (sm) {
+        if (sm.confirm) {
+          //确认删除条目
+          wx.request({
+            url: `${config.service.host}/weapp/storage/delImportDetail`,
+            data: [loginInfo,
+              {
+                importlistid: that.data.id,
+                modelid: that.data.model.modelid,
+              }],
+            method: 'POST',
+            header: { 'content-type': 'application/json' },
+            success: function (result) {
+              var data = that.data.list;
+              for (var x in data) {
+                if (data[x].modelid == that.data.model.modelid) {
+                  data.splice(x, 1);
+                  break;
                 }
-                that.setData({
-                  list: data,
-                  model:{},
-                  existedModel:false,
-                  modelInList: false,
-                  amount:"",
-                });
-              },
-              fail: function (err) {
-                console.log(err);
               }
-            })
-          } else if (sm.cancel) {
-            console.log('用户点击取消')
-          }
-        }
-      })
-    } else {
-      //删除款式
-      wx.showModal({
-        title: '提示',
-        content: '确定要删除这个款式吗？\n注意：只有没有被使用（进货/销售）过的款式才能被删除。',
-        success: function (sm) {
-          if (sm.confirm) {
-            for(var x in that.data.modellist){
-              //确认删除货单
-              wx.request({
-                url: `${config.service.host}/weapp/storage/delModel`,
-                data: [loginInfo,
-                  {
-                    modelid: that.data.modellist[x].modelid,
-                  }],
-                method: 'POST',
-                header: { 'content-type': 'application/json' },
-                success: function (result) {
-                  console.log(result);
-                },
-                fail: function (err) {
-                  console.log(err);
-                }
-              })
+              that.setData({
+                list: data,
+                model: {},
+                existedModel: false,
+                modelInList: false,
+                amount: "",
+              });
+            },
+            fail: function (err) {
+              console.log(err);
             }
-          } else if (sm.cancel) {
-            console.log('用户点击取消')
-          }
+          })
+        } else if (sm.cancel) {
+          console.log('用户点击取消')
         }
-      })
-    }
+      }
+    })
   },
   updateStyle: function () {
     var that = this;
