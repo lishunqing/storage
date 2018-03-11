@@ -8,6 +8,7 @@ Page({
   data: {
     name:"",
     remark:"",
+    auth:"",
     openid:"",
     userid:undefined,
   },
@@ -17,13 +18,14 @@ Page({
    */
   onLoad: function (options) {
     var loginInfo = wx.getStorageSync('loginInfo');
-    this.setData({
-      openid:loginInfo.openid,
-      userid:loginInfo.userid,
-      name:loginInfo.username,
-      remark:loginInfo.userremark,
-      disabled:loginInfo.disabled,
-    });
+    console.log(loginInfo);
+    if (loginInfo){
+      this.setData({
+        name: loginInfo.username ? loginInfo.username:'',
+        remark: loginInfo.userremark ? loginInfo.userremark:'',
+        disabled: loginInfo.disabled != false ?true:false,
+      });
+    }
   },
   nameInput: function (e) {
     var that = this;
@@ -37,8 +39,24 @@ Page({
       remark: e.detail.value,
     })
   },
+  authInput: function (e) {
+    var that = this;
+    that.setData({
+      auth: e.detail.value,
+    })
+  },
   save: function (e) {
     var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    if ((that.data.name == undefined) || (that.data.name == "")) {
+      wx.showModal({
+        title: '错误',
+        content: '称呼不能为空',
+        showCancel: false,
+      })
+      return;
+    }
+
     wx.showModal({
       title: '提示',
       content: `确认保存用户信息`,
@@ -46,27 +64,19 @@ Page({
         if (sm.confirm) {
           wx.request({
             url: `${config.service.host}/weapp/storage/saveUser`,
-            data: [{
-              userid: that.data.userid,
-              openid: that.data.openid,
+            data: [loginInfo,{
+              openid: loginInfo.openid,
               username: that.data.name,
               userremark: that.data.remark,
-            }],
+            }, { auth: that.data.auth,},],
             method: 'POST',
             header: { 'content-type': 'application/json' },
             success: function (result) {
-              that.setData({
-                userid: result.data.userid,
-              });
-              var loginInfo = wx.getStorageSync('loginInfo');
-              loginInfo.userid = that.data.userid;
-              loginInfo.username = that.data.name;
-              loginInfo.userremark = that.data.remark;
-              wx.setStorageSync('loginInfo', loginInfo);
               wx.showToast({
                 title: '保存成功!',
                 icon: 'success'
               })
+              query();
             },
             fail: function (err) {
               console.log(err);
@@ -86,7 +96,6 @@ Page({
           wx.getUserInfo({
             success: function (res) {
               console.log(res);
-
               wx.setStorageSync('userInfo', res.userInfo);//存储userInfo  
             }
           });

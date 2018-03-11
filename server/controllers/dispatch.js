@@ -20,39 +20,27 @@ module.exports = {
     var importList;
     await driver.schema.raw(
       'select i.importlistid,\
-              i.storeid,\
-              s.name storename,\
-              s.tenantid,\
+              i.tenantid,\
               t.name tenantname,\
               IFNULL(i.remark,"") remark,\
               DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
               i.createuser\
       from importlist i\
-        left join store s\
-          on i.storeid = s.storeid\
         left join tenant t\
-          on s.tenantid = t.tenantid\
-      where i.storeid in (\
-      select storeid\
-      from permission\
-      where privilegeid = 2\
-      and userid = ?)\
+          on i.tenantid = t.tenantid\
+      where i.tenantid in (\
+      select distinct s.tenantid\
+      from permission p\
+        left join store s\
+          on p.storeid = s.storeid\
+      where p.privilegeid = 2\
+      and p.userid = ?)\
       and i.finishtime is null\
       order by i.importlistid',
       [loginInfo.userid]
     ).then(result => {
-      importList = result[0]
+      ctx.body = result;
     })
-
-    //查询自己有权限的店铺对应的租户
-    var storelist;
-    await driver.schema.raw(
-      'select s.* from store s where s.storeid > 0 and exists( select 1 from permission p where p.privilegeid = 1 and p.userid = ? and p.storeid = s.storeid)',
-      [loginInfo.userid]
-    ).then(result => {
-      storelist = result[0];
-    })
-    ctx.body = [importList, storelist];
   },
   addImportList: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
@@ -79,12 +67,10 @@ module.exports = {
 
     var importlist;
     await driver.schema.raw(
-      'select i.importlistid,i.storeid,s.name storename,s.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
+      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
       from importlist i\
-        left join store s\
-          on i.storeid = s.storeid\
         left join tenant t\
-          on s.tenantid = t.tenantid\
+          on i.tenantid = t.tenantid\
       where i.importlistid = ?',
       [arg.importlistid]
     ).then(result => {
@@ -125,12 +111,21 @@ module.exports = {
     })
   },
   delImportDetail: async (ctx, next) => {
-    var openid = ctx.request.body[0].openid;
+    var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
     await driver.schema.raw(
       'delete from importdetail where importlistid = ? and modelid = ?', [arg.importlistid, arg.modelid]
     ).then(result => {
       ctx.body = result[0]
+    })
+  },
+  queryArriveDetail: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+    await driver.schema.raw(
+      'select m.*,d.totalamount,d.instoreamount from importdetail d left join importlist i on d.importlistid = i.importlistid left join model m on d.modelid = m.modelid where d.instoreamount < d.totalamount and i.tenantid = ?', [arg.tenantid]
+    ).then(result => {
+      ctx.body = result
     })
   },
   finishImport: async (ctx, next) => {

@@ -24,7 +24,7 @@ Page({
       });
     }
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryImportDetail`,
+      url: `${config.service.host}/weapp/dispatch/queryImportDetail`,
       data: [loginInfo, {
         importlistid: options.id,
       }],
@@ -102,6 +102,49 @@ Page({
         console.log(err);
       }
     })  
+  },
+  printuna: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    var list = that.data.list;
+    var printlist = [];
+    for (var x in list) {
+      if (list[x].totalamount > list[x].instoreamount) {
+        var i = list[x];
+        i.amount = i.totalamount - i.instoreamount;
+        printlist.push(i);
+      }
+    }
+    var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
+    var id = wx.getStorageSync('deviceID');
+
+    wx.request({
+      url: `${config.service.host}/weapp/print/addTagTask`,
+      data: [loginInfo, {
+        deviceid: id,
+        tagTask: {
+          type: 1,
+          model: printlist,
+          style: style,
+        }
+      }],
+      method: 'POST',
+      success: function (result) {
+        wx.showToast({
+          title: '已提交',
+          icon: 'success',
+          duration: 2000
+        })
+        setTimeout(function () {
+          wx.redirectTo({
+            url: "/pages/menu/menu",
+          });
+        }, 500);
+      },
+      fail: function (err) {
+        console.log(err);
+      }
+    })
   },
   printlist: function (e) {
     var that = this;

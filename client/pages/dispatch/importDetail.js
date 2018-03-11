@@ -32,7 +32,7 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     wx.request({
-      url: `${config.service.host}/weapp/storage/queryImportDetail`,
+      url: `${config.service.host}/weapp/dispatch/queryImportDetail`,
       data: [loginInfo, {
         importlistid: that.data.id,
       }],
@@ -241,7 +241,7 @@ Page({
     }
     //提交新的款式
     wx.request({
-      url: `${config.service.host}/weapp/storage/addImportDetail`,
+      url: `${config.service.host}/weapp/dispatch/addImportDetail`,
       data: [loginInfo, {
         importlistid: that.data.id,
         modelid: id,
@@ -334,7 +334,7 @@ Page({
         if (sm.confirm) {
           //确认删除条目
           wx.request({
-            url: `${config.service.host}/weapp/storage/delImportDetail`,
+            url: `${config.service.host}/weapp/dispatch/delImportDetail`,
             data: [loginInfo,
               {
                 importlistid: that.data.id,

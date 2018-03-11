@@ -12,15 +12,12 @@
 
 </view>
 
-<view class="area" wx:if="{{permissions[3]}}">
-    <button bindtap="sell" class="button" type="default">销售</button>
-    <button bindtap="sell" class="button" type="default">退货</button>
-
+<view class="area" wx:if="{{permissions[2]}}">
+    <button bindtap="arrivestore" class="button" type="default">入库签收</button>
 </view>
 
-<view class="area" wx:if="{{permissions[2]}}">
-    <button bindtap="instoreList" class="button" type="default">入库签收</button>
-    <button bindtap="transferList" class="button" type="default">转运签发</button>
+<view class="area" wx:if="{{permissions[3]}}">
+    <button bindtap="sell" class="button" type="default">销售</button>
 </view>
 
 <view class="area">

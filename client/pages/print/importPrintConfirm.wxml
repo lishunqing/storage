@@ -6,7 +6,8 @@
       <view class="tdstyle1">{{style[0].stylename}}</view>
       <view class="tdstyle2">{{style[1].stylename}}</view>
       <view class="tdprice">价格</view>
-      <view class="tdarrived">进货</view>
+      <view class="tdtotal">进货</view>
+      <view class="tdarrived">到货</view>
       <view class="tdamount">打印</view>
   </view>
   <block wx:for="{{list}}" wx:key="{{modelid}}">
@@ -16,11 +17,13 @@
       <view class="tdstyle1">{{item.style1}}</view>
       <view class="tdstyle2">{{item.style2}}</view>
       <view class="tdprice">{{item.price}}</view>
-      <view class="tdarrived" bindtap="min" id="{{index}}">{{item.totalamount}}</view>
+      <view class="tdtotal" bindtap="min" id="{{index}}">{{item.totalamount}}</view>
+      <view class="tdarrived" bindtap="min" id="{{index}}">{{item.instoreamount}}</view>
       <view class="tdamount" bindtap="add" id="{{index}}">{{item.printamount}}</view>
     </view>
   </block>
 </view>
 <button bindtap="printall" class="button" type="primary" wx:if="{{list.length > 0}}">打印所有标签</button>
+<button bindtap="printuna" class="button" type="primary" wx:if="{{list.length > 0}}">打印未到货标签</button>
 <button bindtap="print" class="button" type="primary" wx:if="{{list.length > 0}}">打印指定数量</button>
 <button bindtap="printlist" class="button" type="primary" wx:if="{{list.length > 0}}">打印清单</button>

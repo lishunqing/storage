@@ -19,8 +19,8 @@
       <view class="tdstyle1">{{style[0].stylename}}</view>
       <view class="tdstyle2">{{style[1].stylename}}</view>
       <view class="tdprice">价格</view>
-      <view class="tdtotal">应到</view>
-      <view class="tdinstore">已到</view>
+      <view class="tddate">签收</view>
+      <view class="tdtime">时间</view>
   </view>
   <block wx:for="{{list}}" wx:key="{{modelid}}">
     <view class="tr" id="{{item.modelid}}">
@@ -29,8 +29,8 @@
       <view class="tdstyle1">{{item.style1}}</view>
       <view class="tdstyle2">{{item.style2}}</view>
       <view class="tdprice">{{item.price}}</view>
-      <view class="tdtotal">{{item.totalamount}}</view>
-      <view class="tdinstore">{{item.instoreamount}}</view>
+      <view class="tddate">{{item.username}}</view>
+      <view class="tdtime">{{item.actime}}</view>
 
     </view>
   </block>

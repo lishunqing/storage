@@ -105,6 +105,11 @@ Page({
       url: "/pages/menu/userList",
     });
   },
+  arrivestore: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/arrive",
+    });
+  },
   sell: function (e) {
     wx.navigateTo({
       url: "/pages/sell/sell",

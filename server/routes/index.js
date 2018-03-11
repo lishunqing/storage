@@ -43,6 +43,9 @@ router.post('/store/query', controllers.store.query)
 router.post('/store/addsell', controllers.store.addsell)
 router.post('/store/querysell', controllers.store.querysell)
 
+router.post('/item/add', controllers.item.add)
+router.post('/item/queryRec', controllers.item.queryRec)
+
 router.get('/storage/login', controllers.user.getLogin)
 router.post('/storage/saveUser', controllers.user.save)
 router.post('/storage/userList', controllers.user.queryList)
@@ -57,12 +60,16 @@ router.post('/storage/delModel', controllers.model.del)
 router.post('/storage/modModel', controllers.model.mod)
 
 
-router.post('/storage/queryImportList', controllers.dispatch.queryImportList)
-router.post('/storage/addImportList', controllers.dispatch.addImportList)
-router.post('/storage/delImportList', controllers.dispatch.delImportList)
-router.post('/storage/addImportDetail', controllers.dispatch.addImportDetail)
-router.post('/storage/delImportDetail', controllers.dispatch.delImportDetail)
-router.post('/storage/queryImportDetail', controllers.dispatch.queryImportDetail)
+router.post('/dispatch/queryImportList', controllers.dispatch.queryImportList)
+router.post('/dispatch/addImportList', controllers.dispatch.addImportList)
+router.post('/dispatch/delImportList', controllers.dispatch.delImportList)
+router.post('/dispatch/addImportDetail', controllers.dispatch.addImportDetail)
+router.post('/dispatch/delImportDetail', controllers.dispatch.delImportDetail)
+router.post('/dispatch/queryImportDetail', controllers.dispatch.queryImportDetail)
+router.post('/dispatch/queryArriveDetail', controllers.dispatch.queryArriveDetail)
+
+
+
 router.post('/storage/finishImport', controllers.dispatch.finishImport)
 router.post('/storage/addArrive', controllers.store.addArrive)
 

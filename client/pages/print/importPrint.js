@@ -26,7 +26,7 @@ Page({
     if (true){
       //查询自己创建的或等待自己签收的，已经完成，尚未签收的进货单
       wx.request({
-        url: `${config.service.host}/weapp/storage/queryImportList` ,
+        url: `${config.service.host}/weapp/dispatch/queryImportList` ,
         data: [loginInfo,],
         method: 'POST',
         success: function (result) {

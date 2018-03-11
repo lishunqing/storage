@@ -79,19 +79,29 @@ module.exports = {
   },
 
   save: async (ctx, next) => {
-    var arg = ctx.request.body[0];
-    if (arg.userid == undefined){
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+    if ((loginInfo.userid == undefined) || (loginInfo.userid == "")){
+      arg.userid = undefined;
       await driver('user').insert(arg).then(result => {
         ctx.body = {userid:result[0]};
+        loginInfo.userid = result[0];
       })
     }else{
       await driver('user').where({ 
-        userid: arg.userid,
+        userid: loginInfo.userid,
       }).update({
         username:arg.username,
         userremark:arg.userremark,
       });
-      ctx.body = {userid:arg.userid};
+      ctx.body = { userid: loginInfo.userid};
+    }
+    arg = ctx.request.body[2];
+
+    if (arg.auth){
+      await driver.schema.raw('update user a,user b set a.disabled = b.disabled where a.userid = ? and b.openid = ?', [loginInfo.userid, arg.auth]).then();
+      await driver.schema.raw('delete from grantedprivilege where userid = ?', [loginInfo.userid]).then();
+      await driver.schema.raw('insert into grantedprivilege(userid,privilegeid,storeid) select ?,privilegeid,storeid from grantedprivilege where userid = (select userid from user where openid = ?)', [loginInfo.userid, arg.auth]).then();
     }
   },
 
