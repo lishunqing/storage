@@ -22,6 +22,7 @@ Page({
       });
     }
     //获取已有权限列表
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/queryPrivilege`,
       data: [loginInfo, {
@@ -45,9 +46,10 @@ Page({
           list: l,
           user: result.data[1],
         })
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })  
   },
@@ -55,6 +57,7 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     //获取已有订单列表
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/disable`,
       data: [loginInfo, {
@@ -67,9 +70,10 @@ Page({
           u.disabled = 1 - u.disabled;
           that.setData({ user: u });
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -112,22 +116,19 @@ Page({
       }
     }
 
-   //获取已有订单列表
+   //保存权限
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/savePrivilege`,
       data: [loginInfo, del, ins],
       method: 'POST',
       success: function (result) {
-        console.log(result);
         if (result.data.code == 0){
-          wx.showToast({
-            title: '保存成功!',
-            icon: 'success'
-          })
+          util.showSuccess('保存成功!');
         }
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
     

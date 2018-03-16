@@ -24,6 +24,7 @@ Page({
               wx.setStorageSync('userInfo', res.userInfo);//存储userInfo  
             }
           });
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/storage/login`,
             data: { 'js_code': res.code },
@@ -46,13 +47,10 @@ Page({
                 m[per[x].privilegeid] = true;
               }
               that.setData({ permissions: m });
+              util.stopBusy();
             },
             fail: function (err) {
-             wx.showModal({
-                title: '网络异常',
-                content: '详细信息：' + err.errMsg,
-                showCancel: false
-              })
+              util.showModel('网络异常', err);
             }
           });
         } else {
@@ -103,6 +101,11 @@ Page({
   storedetail: function (e) {
     wx.navigateTo({
       url: "/pages/store/storedetail",
+    });
+  },
+  storecheck: function (e) {
+    wx.navigateTo({
+      url: "/pages/store/storecheck",
     });
   },
   sell: function (e) {

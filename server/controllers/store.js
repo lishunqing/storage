@@ -55,13 +55,24 @@ module.exports = {
   queryItem: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
-    //查询每件货的状态和流水，用于核销库存
-    await driver.schema.raw(
-      'select i.*,cs.name storename,rs.storeid recstoreid,rs.name recstore,u.username recname,DATE_FORMAT(r.actime,\'%Y-%m-%d %H:%i:%S\') rectime,r.action rection,iu.username itemuser,DATE_FORMAT(i.actime,\'%Y-%m-%d %H:%i:%S\') itime  from item i left join user iu on i.userid = iu.userid left join store cs on i.storeid = cs.storeid left join itemrec r on i.item = r.item left join store rs on r.storeid = rs.storeid left join user u on r.userid = u.userid where i.modelid = ? order by i.item,r.recid',
-      [arg.modelid]
-    ).then(result => {
-      ctx.body = result
-    })
+
+    if ((arg.storeid)&&(arg.modelid)){
+      //根据款号店铺查询该店铺的状态和流水，用于库存查询和盘点看明细
+      await driver.schema.raw(
+        'select i.*,cs.name storename,rs.storeid recstoreid,rs.name recstore,u.username recname,DATE_FORMAT(r.actime,\'%Y-%m-%d %H:%i:%S\') rectime,r.action rection,iu.username itemuser,DATE_FORMAT(i.actime,\'%Y-%m-%d %H:%i:%S\') itime  from item i left join user iu on i.userid = iu.userid left join store cs on i.storeid = cs.storeid left join itemrec r on i.item = r.item left join store rs on r.storeid = rs.storeid left join user u on r.userid = u.userid where i.modelid = ? and (i.storeid = ? or i.item in (select item from sell where sell.storeid = ? and item is not null)) order by i.item,r.recid',
+        [arg.modelid,arg.storeid,arg.storeid]
+      ).then(result => {
+        ctx.body = result
+      })
+    } else if (arg.storeid){
+      //查询每件货的状态和流水，用于核销库存
+      await driver.schema.raw(
+        'select i.*,cs.name storename,rs.storeid recstoreid,rs.name recstore,u.username recname,DATE_FORMAT(r.actime,\'%Y-%m-%d %H:%i:%S\') rectime,r.action rection,iu.username itemuser,DATE_FORMAT(i.actime,\'%Y-%m-%d %H:%i:%S\') itime  from item i left join user iu on i.userid = iu.userid left join store cs on i.storeid = cs.storeid left join itemrec r on i.item = r.item left join store rs on r.storeid = rs.storeid left join user u on r.userid = u.userid where i.modelid = ? order by i.item,r.recid',
+        [arg.modelid]
+      ).then(result => {
+        ctx.body = result
+      })
+    }
   },
   query: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
@@ -72,20 +83,20 @@ module.exports = {
         'select m.*,s.amount from model m left join storedetail s on s.storeid = ? and s.modelid = m.modelid where m.modelid = ?',
         [arg.storeid, arg.modelid]
       ).then(result => {
-        ctx.body = result
+        ctx.body = result;
       })
     }else if ((arg.tenantid)&&(arg.modelcode)){
       //根据款号查询所有库存
       await driver.schema.raw(
-        'select m.*,s.name storename,d.amount from model m,storedetail d left join store s on d.storeid = s.storeid where d.amount > 0 and d.modelid = m.modelid and m.tenantid = ? and m.modelcode = ?',
+        'select m.*,d.storeid,s.name storename,d.amount from model m,storedetail d left join store s on d.storeid = s.storeid where d.amount > 0 and d.modelid = m.modelid and m.tenantid = ? and m.modelcode = ?',
         [arg.tenantid, arg.modelcode]
       ).then(result => {
-        ctx.body = result
+        ctx.body = result;
       })
     } else if ((arg.storeid)&&(arg.action)) {
       //用于库存盘点,返回总库存和已盘点库存
       await driver.schema.raw(
-        'select m.*,s.amount,ifnull(i.confirmamount,0) confirmamount from storedetail s left join (select modelid,count(*) confirmamount from item where storeid = ? and actime > DATE_FORMAT(CURRENT_TIMESTAMP,\'%Y-%m-%d 00:00:00\') group by modelid) i on s.modelid = i.modelid left join model m on s.modelid = m.modelid  where s.storeid = ? and s.amount > 0',
+        'select m.*,s.storeid,s.amount,ifnull(i.confirmamount,0) confirmamount from storedetail s left join (select modelid,count(*) confirmamount from item where storeid = ? and actime > DATE_FORMAT(CURRENT_TIMESTAMP,\'%Y-%m-%d 00:00:00\') group by modelid) i on s.modelid = i.modelid left join model m on s.modelid = m.modelid  where s.storeid = ? and s.amount > 0',
         [arg.storeid, arg.storeid]
       ).then(result => {
         ctx.body = result
@@ -93,7 +104,7 @@ module.exports = {
     } else if (arg.storeid) {
       //查询本店所有库存
       await driver.schema.raw(
-        'select m.*,s.amount from storedetail s left join model m on s.modelid = m.modelid where s.storeid = ?',
+        'select m.*,s.storeid,s.amount from storedetail s left join model m on s.modelid = m.modelid where s.storeid = ?',
         [arg.storeid]
       ).then(result => {
         ctx.body = result

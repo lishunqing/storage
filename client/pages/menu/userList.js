@@ -16,7 +16,8 @@ Page({
   onLoad: function (options) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    //获取已有订单列表
+    //获取已有用户列表
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/userList`,
       data: [loginInfo,{}],
@@ -25,9 +26,10 @@ Page({
         that.setData({
           list: result.data,
         })
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -41,7 +43,8 @@ Page({
   disable: function(e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    //获取已有订单列表
+    //暂停用户
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/disable`,
       data: [loginInfo, {
@@ -59,9 +62,10 @@ Page({
             }
           }
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },

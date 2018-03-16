@@ -38,6 +38,7 @@ Page({
     }
 
     //获取已有订单列表
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/dispatch/queryImportList`, 
       data: [loginInfo,
@@ -49,9 +50,10 @@ Page({
           tenantNameList: tenantNameList,
           list: result.data[0],
         })
+        util.stopBusy();
       },
       fail: function(err){
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -79,6 +81,7 @@ Page({
         if (sm.confirm) {
           var data = that.data.list;
           //确认删除货单
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/dispatch/delImportList`,
             data: [loginInfo,
@@ -100,9 +103,10 @@ Page({
                   showCancel: false
                 })
               }
+              util.stopBusy();
             },
             fail: function (err) {
-              console.log(err);
+              util.showModel('网络异常', err);
             }
           })
         } else if (sm.cancel) {

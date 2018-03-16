@@ -32,6 +32,7 @@ Page({
   loadList:function(){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/dispatch/queryImportDetail`,
       data: [loginInfo, {
@@ -64,9 +65,10 @@ Page({
           importList: result.data[0],
           list: result.data[1],
         })
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -87,6 +89,7 @@ Page({
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     //尝试获取款号
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: [loginInfo, {
@@ -119,13 +122,10 @@ Page({
           var id = that.getModelID();
           return that.createDetail(id);
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        wx.showModal({
-          title: '网络异常',
-          content: '详细信息：' + err.errMsg,
-          showCancel: false
-        })
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -227,11 +227,7 @@ Page({
     }
 
     if (err) {
-      wx.showModal({
-        title: '错误',
-        content: err,
-        showCancel: false
-      })
+      util.showModel('错误', err);
       return;
     }
 
@@ -245,6 +241,7 @@ Page({
       return '数量不能为空';
     }
     //提交新的款式
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/dispatch/addImportDetail`,
       data: [loginInfo, {
@@ -257,9 +254,10 @@ Page({
       header: { 'content-type': 'application/json' },
       success: function (result) {
         that.loadList();
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -299,6 +297,7 @@ Page({
     }
 
     //提交新的款式
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/addModel`,
       data: [loginInfo, opt],
@@ -310,7 +309,7 @@ Page({
         return that.queryCode(opt.modelcode,next);
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -338,6 +337,7 @@ Page({
       success: function (sm) {
         if (sm.confirm) {
           //确认删除条目
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/dispatch/delImportDetail`,
             data: [loginInfo,
@@ -362,9 +362,10 @@ Page({
                 modelInList: false,
                 amount: "",
               });
+              util.stopBusy();
             },
             fail: function (err) {
-              console.log(err);
+              util.showModel('网络异常', err);
             }
           })
         } else if (sm.cancel) {

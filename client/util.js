@@ -24,7 +24,7 @@ const getMinute = date => {
 
 // 显示繁忙提示 
 var showBusy = text => wx.showToast({ 
-  title: text,
+  title: (text)?text:'工作中...',
   icon: 'loading',
   duration: 10000
 }) 
@@ -34,7 +34,7 @@ var stopBusy = () => {
 }
 // 显示成功提示 
 var showSuccess = text => wx.showToast({ 
-  title: text,
+  title: (text) ? text : '成功！',
   icon: 'success'
 }) 
 // 显示失败提示 

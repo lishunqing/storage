@@ -18,6 +18,8 @@ Page({
     var that = this;
 
     var permission = wx.getStorageSync('permission');
+    var defaultStore = wx.getStorageSync('defaultStore');
+    var idx = 0;
     var storeIDList = [];
     var storeNameList = [];
     var tenantIDList = [];
@@ -33,6 +35,9 @@ Page({
         }
       }
       if (newStore) {
+        if (permission[x].storeid == defaultStore) {
+          idx = storeIDList.length;
+        }
         storeIDList.push(permission[x].storeid);
         storeNameList.push(permission[x].storename);
         tenantIDList.push(permission[x].tenantid);
@@ -44,7 +49,7 @@ Page({
       tenantIDList: tenantIDList,
     })
 
-    that.storeInput({ detail: { value: 0 } });
+    that.storeInput({ detail: { value: idx } });
     setInterval(function () { that.codeScan();}, 100);
   },
   storeInput: function (e) {
@@ -68,6 +73,8 @@ Page({
       }
       stylevaluelist[tenantStyle[x].styleid] = itemlist;
     }
+
+    wx.setStorageSync('defaultStore', that.data.storeIDList[parseInt(idx)]);
 
     that.setData({
       modelNameList: modelnamelist,
@@ -104,7 +111,7 @@ Page({
         var modelid = parseInt(text.substring(text.indexOf('&2=') + 3, text.indexOf('&3=')));
         var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='))
         var timestamp = text.substring(text.indexOf('&4=') + 3)
-        util.showBusy('工作中');
+        util.showBusy();
         wx.request({
           url: `${config.service.host}/weapp/item/add`,
           data: [loginInfo, {
@@ -138,6 +145,7 @@ Page({
   loadList:function(){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/item/queryRec`,
       data: [loginInfo, {
@@ -149,9 +157,10 @@ Page({
         that.setData({
           list: result.data[0],
         })
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },

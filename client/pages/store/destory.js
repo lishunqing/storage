@@ -16,6 +16,8 @@ Page({
     var that = this;
 
     var permission = wx.getStorageSync('permission');
+    var defaultStore = wx.getStorageSync('defaultStore');
+    var idx = 0;
     var storeIDList = [];
     var storeNameList = [];
     var tenantIDList = [];
@@ -31,6 +33,9 @@ Page({
         }
       }
       if (newStore) {
+        if (permission[x].storeid == defaultStore) {
+          idx = storeIDList.length;
+        }
         storeIDList.push(permission[x].storeid);
         storeNameList.push(permission[x].storename);
         tenantIDList.push(permission[x].tenantid);
@@ -42,7 +47,7 @@ Page({
       tenantIDList: tenantIDList,
     })
 
-    that.storeInput({ detail: { value: 0 } });
+    that.storeInput({ detail: { value: idx } });
   },
   storeInput: function (e) {
     var that = this;
@@ -65,6 +70,8 @@ Page({
       }
       stylevaluelist[tenantStyle[x].styleid] = itemlist;
     }
+
+    wx.setStorageSync('defaultStore', that.data.storeIDList[parseInt(idx)]);
 
     that.setData({
       modelNameList: modelnamelist,
@@ -107,7 +114,7 @@ Page({
         var modelid = parseInt(text.substring(text.indexOf('&2=') + 3, text.indexOf('&3=')));
         var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='))
         var timestamp = text.substring(text.indexOf('&4=') + 3)
-        util.showBusy('加载中');
+        util.showBusy();
         wx.request({
           url: `${config.service.host}/weapp/store/query`,
           data: [loginInfo, {
@@ -121,9 +128,10 @@ Page({
               model: result.data[0][0],
             })
             that.loadItem(modelid);
+            util.stopBusy();
           },
           fail: function (err) {
-            util.showModel('错误', err);
+            util.showModel('网络异常', err);
           }
         })
       },
@@ -145,7 +153,7 @@ Page({
     //获取本店库存
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    util.showBusy('查询中');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/store/query`,
       data: [loginInfo, arg],
@@ -166,7 +174,7 @@ Page({
   loadItem:function(modelid){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    util.showBusy('查询中');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/store/queryItem`,
       data: [loginInfo, {
@@ -254,6 +262,7 @@ Page({
       }
     }
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/item/add`,
       data: [loginInfo, {
@@ -265,6 +274,7 @@ Page({
       method: 'POST',
       success: function (result) {
         that.loadItem(that.data.model.modelid);
+        util.stopBusy();
       },
       fail: function (err) {
         util.showModel('网络异常', err);

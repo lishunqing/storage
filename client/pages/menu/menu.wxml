@@ -14,7 +14,8 @@
 
 <view class="area" wx:if="{{permissions[2]}}">
     <button bindtap="arrivestore" class="button" type="default">到店签收</button>
-    <button bindtap="storedetail" class="button" type="default">库存明细</button>
+    <button bindtap="storedetail" class="button" type="default">库存查询</button>
+    <button bindtap="storecheck" class="button" type="default">库存盘点</button>
 </view>
 
 <view class="area" wx:if="{{permissions[3]}}">

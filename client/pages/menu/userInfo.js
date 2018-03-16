@@ -19,7 +19,6 @@ Page({
    */
   onLoad: function (options) {
     var loginInfo = wx.getStorageSync('loginInfo');
-    console.log(loginInfo);
     if (loginInfo){
       this.setData({
         name: loginInfo.username ? loginInfo.username:'',
@@ -63,6 +62,7 @@ Page({
       content: `确认保存用户信息`,
       success: function (sm) {
         if (sm.confirm) {
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/storage/saveUser`,
             data: [loginInfo,{
@@ -73,14 +73,11 @@ Page({
             method: 'POST',
             header: { 'content-type': 'application/json' },
             success: function (result) {
-              wx.showToast({
-                title: '保存成功!',
-                icon: 'success'
-              })
+              util.showSuccess('保存成功!');
               query();
             },
             fail: function (err) {
-              console.log(err);
+              util.showModel('网络异常', err);
             }
           })
         } else if (sm.cancel) {
@@ -96,17 +93,17 @@ Page({
         if (res.code) {
           wx.getUserInfo({
             success: function (res) {
-              console.log(res);
               wx.setStorageSync('userInfo', res.userInfo);//存储userInfo  
             }
           });
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/storage/login`,
             data: { 'js_code': res.code },
             method: 'get', // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
             header: { 'content-type': 'application/json' }, // 设置请求的 header 
             success: function (res) {
-              console.log(res);
+              util.stopBusy();
               wx.setStorageSync('loginInfo', res.data[0]);//存储openid和sessionkey
               wx.setStorageSync('tenantList', res.data[1]);//存储租户列表
               wx.setStorageSync('tenantStyle', res.data[2]);//存储租户属性
@@ -116,6 +113,9 @@ Page({
                   url: "/pages/menu/menu",
                 });
               }
+            },
+            fail: function (err) {
+              util.showModel('网络异常', err);
             }
           });
         } else {

@@ -46,12 +46,12 @@ Page({
       tenantIDList: tenantIDList,
       tenantNameList: tenantNameList,
     })
-    var e = { detail: { value: 0 } };
-    that.tenantInput(e);
+    that.tenantInput({ detail: { value: 0 } });
   },
   getDevice: function (id) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/device`,
       data: [loginInfo, {
@@ -82,9 +82,10 @@ Page({
             })
           }
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -98,16 +99,6 @@ Page({
         that.setData({
           deviceID: res.result
         })
-      },
-      fail: (res) => {
-        console.log(res);
-        wx.showToast({
-          title: '没有二维码',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      complete: (res) => {
       },
     });
 
@@ -157,6 +148,7 @@ Page({
       return;
     }
     //尝试获取款号
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: [loginInfo, {
@@ -182,9 +174,10 @@ Page({
             amount: '',            
           })
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -210,12 +203,9 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
 
     if (!(that.data.amount > 0)){
-      wx.showModal({
-        title: '错误',
-        content: '打印数量必须大于0。',
-        showCancel: false
-      })
-      return;
+      that.setDate({
+        amount:1,
+      });
     }
 
     var model = that.data.model;
@@ -225,6 +215,7 @@ Page({
     var style = wx.getStorageSync('tenantStyle')[that.data.tenantIDList[that.data.tenantIdx]];
     var id = wx.getStorageSync('deviceID');
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/addTagTask`,
       data: [loginInfo, {
@@ -237,17 +228,13 @@ Page({
       }],
       method: 'POST',
       success: function (result) {
-        wx.showToast({
-          title: '已提交',
-          icon: 'success',
-          duration: 2000
-        })
+        util.showSuccess('已提交打印');
         that.setData({
           amount:'',
         });
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },

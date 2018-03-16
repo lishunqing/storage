@@ -16,6 +16,8 @@ Page({
     var that = this
 
     var permission = wx.getStorageSync('permission');
+    var defaultStore = wx.getStorageSync('defaultStore');
+    var idx = 0;
     var storeIDList = [];
     var storeNameList = [];
     var tenantIDList = [];
@@ -31,6 +33,9 @@ Page({
         }
       }
       if (newStore) {
+        if (permission[x].storeid == defaultStore) {
+          idx = storeIDList.length;
+        }
         storeIDList.push(permission[x].storeid);
         storeNameList.push(permission[x].storename);
         tenantIDList.push(permission[x].tenantid);
@@ -43,7 +48,7 @@ Page({
       choosed: false,
     })
 
-    that.storeInput({ detail: { value: 0 } });
+    that.storeInput({ detail: { value: idx } });
   },
   storeInput: function (e) {
     var that = this;
@@ -67,6 +72,8 @@ Page({
       stylevaluelist[tenantStyle[x].styleid] = itemlist;
     }
 
+    wx.setStorageSync('defaultStore', that.data.storeIDList[parseInt(idx)]);
+
     that.setData({
       modelNameList: modelnamelist,
       styleValueList: stylevaluelist,
@@ -86,7 +93,7 @@ Page({
       return;
     }
     //尝试获取款号
-    util.showBusy('查询中');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/store/querysell`,
       data: [loginInfo, {

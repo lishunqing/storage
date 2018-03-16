@@ -13,7 +13,8 @@
 
     "pages/sell/arrive",
     "pages/store/storedetail",
-
+    "pages/store/storecheck",
+    
     "pages/sell/sell",
     "pages/sell/refund",
     "pages/menu/userInfo",

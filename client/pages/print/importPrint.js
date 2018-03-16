@@ -26,6 +26,7 @@ Page({
     }
     if (true){
       //查询自己创建的或等待自己签收的，已经完成，尚未签收的进货单
+      util.showBusy();
       wx.request({
         url: `${config.service.host}/weapp/dispatch/queryImportList` ,
         data: [loginInfo,],
@@ -34,9 +35,10 @@ Page({
           that.setData({
             list: result.data[0],
           })
+          util.stopBusy();
         },
         fail: function (err) {
-          console.log(err);
+          util.showModel('网络异常', err);
         }
       })
     }
@@ -45,6 +47,7 @@ Page({
   getDevice:function (id){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/device`,
       data: [loginInfo, {
@@ -75,9 +78,10 @@ Page({
             })
           }
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -91,16 +95,6 @@ Page({
         that.setData({
           deviceID: res.result
         })
-      },
-      fail: (res) => {
-        console.log(res);
-        wx.showToast({
-          title: '失败',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      complete: (res) => {
       },
     });
 

@@ -90,6 +90,7 @@ Page({
       return;
     }
     //尝试获取款号
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/getModel`,
       data: [loginInfo,{
@@ -113,9 +114,10 @@ Page({
             model: model,
           })
         }
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -234,6 +236,7 @@ Page({
     }
 
     //提交新的款式
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/storage/modModel`,
       data: [loginInfo, opt],
@@ -243,13 +246,10 @@ Page({
         that.updateStyle();
         //重新尝试获取款号
         that.codeInput({ detail: { value: that.data.model.modelcode}});
-        wx.showToast({
-          title: '更新成功!',
-          icon: 'success'
-        })
+        util.showSuccess('更新成功!');
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -262,6 +262,7 @@ Page({
       success: function (sm) {
         if (sm.confirm) {
           //确认删除货单
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/storage/delModel`,
             data: [loginInfo,
@@ -273,21 +274,14 @@ Page({
             success: function (result) {
               //重新尝试获取款号
               if (result.data.code == -1) {
-                wx.showModal({
-                  title: '删除失败！',
-                  content: '可能该款式已经被使用过。\n' + result.data.error,
-                  showCancel: false
-                })
+                util.showModel('删除失败！', '可能该款式已经被使用过。\n' + result.data.error);
               } else {
                 that.codeInput({ detail: { value: that.data.model.modelcode } });
-                wx.showToast({
-                  title: '删除成功!',
-                  icon: 'success'
-                })
+                util.showSuccess('删除成功!');
               }
             },
             fail: function (err) {
-              console.log(err);
+              util.showModel('网络异常', err);
             }
           })
         } else if (sm.cancel) {

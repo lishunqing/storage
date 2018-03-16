@@ -23,6 +23,7 @@ Page({
         url: "/pages/menu/menu",
       });
     }
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/dispatch/queryImportDetail`,
       data: [loginInfo, {
@@ -40,9 +41,10 @@ Page({
           dispatch: result.data[0], 
           list: result.data[1],
         })
+        util.stopBusy();
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })  
   },
@@ -78,6 +80,7 @@ Page({
     var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
     var id = wx.getStorageSync('deviceID');
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/addTagTask`,
       data: [loginInfo, {
@@ -89,17 +92,13 @@ Page({
       }}],
       method: 'POST',
       success: function (result) {
-        wx.showToast({
-          title: '已提交',
-          icon: 'success',
-          duration: 2000
-        })
+        util.showSuccess('已提交打印！');
         setTimeout(function(){wx.redirectTo({
           url: "/pages/menu/menu",
         });},500);
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })  
   },
@@ -118,6 +117,7 @@ Page({
     var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
     var id = wx.getStorageSync('deviceID');
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/addTagTask`,
       data: [loginInfo, {
@@ -130,11 +130,7 @@ Page({
       }],
       method: 'POST',
       success: function (result) {
-        wx.showToast({
-          title: '已提交',
-          icon: 'success',
-          duration: 2000
-        })
+        util.showSuccess('已提交打印！');
         setTimeout(function () {
           wx.redirectTo({
             url: "/pages/menu/menu",
@@ -142,7 +138,7 @@ Page({
         }, 500);
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -156,6 +152,7 @@ Page({
     var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
     var id = wx.getStorageSync('deviceID');
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/addTagTask`,
       data: [loginInfo, {
@@ -168,11 +165,7 @@ Page({
       }],
       method: 'POST',
       success: function (result) {
-        wx.showToast({
-          title: '已提交',
-          icon: 'success',
-          duration: 2000
-        })
+        util.showSuccess('已提交打印！');
         setTimeout(function () {
           wx.redirectTo({
             url: "/pages/menu/menu",
@@ -180,7 +173,7 @@ Page({
         }, 500);
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },
@@ -199,6 +192,7 @@ Page({
     var style = wx.getStorageSync('tenantStyle')[that.data.dispatch.tenantid];
     var id = wx.getStorageSync('deviceID');
 
+    util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/print/addTagTask`,
       data: [loginInfo, {
@@ -211,11 +205,7 @@ Page({
       }],
       method: 'POST',
       success: function (result) {
-        wx.showToast({
-          title: '已提交',
-          icon: 'success',
-          duration: 2000
-        })
+        util.showSuccess('已提交打印！');
         setTimeout(function () {
           wx.redirectTo({
             url: "/pages/menu/menu",
@@ -223,7 +213,7 @@ Page({
         }, 500);
       },
       fail: function (err) {
-        console.log(err);
+        util.showModel('网络异常', err);
       }
     })
   },

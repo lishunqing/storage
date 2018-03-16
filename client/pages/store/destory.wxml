@@ -3,7 +3,7 @@
     <view class="item" wx:if="{{storeNameList.length > 1}}">
       <text class="item-title">地点</text>
       <text class="item-value">{{storeNameList[Idx]}}</text>
-      <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}">  
+      <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}" value="{{Idx}}">  
         <text>选择</text>
       </picker>
     </view>
