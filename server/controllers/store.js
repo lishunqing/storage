@@ -64,7 +64,7 @@ module.exports = {
       ).then(result => {
         ctx.body = result
       })
-    } else if (arg.storeid){
+    } else if (arg.modelid){
       //查询每件货的状态和流水，用于核销库存
       await driver.schema.raw(
         'select i.*,cs.name storename,rs.storeid recstoreid,rs.name recstore,u.username recname,DATE_FORMAT(r.actime,\'%Y-%m-%d %H:%i:%S\') rectime,r.action rection,iu.username itemuser,DATE_FORMAT(i.actime,\'%Y-%m-%d %H:%i:%S\') itime  from item i left join user iu on i.userid = iu.userid left join store cs on i.storeid = cs.storeid left join itemrec r on i.item = r.item left join store rs on r.storeid = rs.storeid left join user u on r.userid = u.userid where i.modelid = ? order by i.item,r.recid',
