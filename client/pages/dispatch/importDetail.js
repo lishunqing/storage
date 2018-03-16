@@ -1,4 +1,5 @@
 var config = require('../../config')
+var util = require('../../util')
  
 // importList.js
 Page({
@@ -75,7 +76,7 @@ Page({
 
     if (!e.detail.value) {
       that.setData({
-        model: [{}],
+        model: {},
         existedModel: false,
       })
       return;
@@ -108,7 +109,7 @@ Page({
         }
         else {
           that.setData({
-            model: { modelcode: e.detail.value },
+            model: { modelcode: code },
             existedModel: false,
             modelInList: false,
             modellist: [],
@@ -120,7 +121,11 @@ Page({
         }
       },
       fail: function (err) {
-        console.log(err);
+        wx.showModal({
+          title: '网络异常',
+          content: '详细信息：' + err.errMsg,
+          showCancel: false
+        })
       }
     })
   },

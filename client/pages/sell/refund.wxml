@@ -1,0 +1,70 @@
+<view class="area">
+  <view class="text" width="100%">
+    <view class="item" wx:if="{{storeNameList.length > 1}}">
+      <text class="item-title">地点</text>
+      <text class="item-value">{{storeNameList[Idx]}}</text>
+      <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}">  
+        <text>选择</text>
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">款号</text>
+      <input bindblur="codeInput" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
+      <text class="item-disable" wx:if="{{(1==2)}}">{{model.modelcode}}</text>
+      <text bindtap="codeScan" class="item-picker">扫码</text>
+    </view>
+
+    <view class="item" wx:if="{{model.name}}">
+      <text class="item-title">名称</text>
+      <text class="item-disable">{{model.name}}</text>
+      <text class="item-picker"/>
+    </view>
+    <block wx:for="{{style}}" wx:key="{{styleid}}" wx:if="{{model['style' + item.styleid]}}">
+      <view class="item">
+        <text class="item-title">{{item.stylename}}</text>
+        <text class="item-disable">{{model['style' + item.styleid]}}</text>
+        <text class="item-picker"/>
+      </view>
+    </block>
+    <view class="item" wx:if="{{model.price}}">
+      <text class="item-title">价格</text>
+      <text class="item-disable">{{model.price}}</text>
+      <text class="item-picker"/>
+    </view>
+
+    <view class="item" wx:if="{{model.sellname}}">
+      <text class="item-title">经售</text>
+      <text class="item-disable">{{model.sellname}}</text>
+      <text class="item-picker"/>
+    </view>
+    <view class="item" wx:if="{{model.sellname}}">
+      <text class="item-title">时间</text>
+      <text class="item-disable">{{model.selldate + ' ' + model.selltime}}</text>
+      <text class="item-picker"/>
+    </view>
+
+    <button bindtap="refund" class="button" type="primary" wx:if="{{model.item}}">确认退货</button>
+
+  </view>
+</view>
+
+<view class="table" wx:if="{{model.modelcode && !model.item}}">
+  <view class="th">
+      <view class="tdcode">款号</view>
+      <view class="tdname">名称</view>
+      <view class="tdstyle1">{{style[0].stylename}}</view>
+      <view class="tdstyle2">{{style[1].stylename}}</view>
+      <view class="tdprice">价格</view>
+      <view class="tduser">经售</view>
+  </view>
+  <block wx:for="{{modellist}}" wx:key="{{modelid}}">
+    <view class="tr" bindtap="choose" id="{{index}}">
+      <view class="tdcode">{{item.selldate + ' ' + item.selltime}}</view>
+      <view class="tdname">{{item.name}}</view>
+      <view class="tdstyle1">{{item.style1}}</view>
+      <view class="tdstyle2">{{item.style2}}</view>
+      <view class="tdprice">{{item.price}}</view>
+      <view class="tduser">{{item.sellname}}</view>
+    </view>
+  </block>
+</view>

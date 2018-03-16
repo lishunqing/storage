@@ -9,7 +9,8 @@
     </view>
     <view class="item">
       <text class="item-title">款号</text>
-      <input bindblur="codeInput" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
+      <input bindblur="codeInput" wx:if="{{(1==2)}}" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
+      <text class="item-disable">{{model.modelcode}}</text>
       <text bindtap="codeScan" class="item-picker">扫码</text>
     </view>
 
@@ -79,7 +80,7 @@
       <view class="tdstyle1">{{style[0].stylename}}</view>
       <view class="tdstyle2">{{style[1].stylename}}</view>
       <view class="tdprice">价格</view>
-      <view class="tddate">售出</view>
+      <view class="tddate">经售</view>
       <view class="tdtime">时间</view>
   </view>
   <block wx:for="{{list}}" wx:key="{{modelid}}">

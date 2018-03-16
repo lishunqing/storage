@@ -2,20 +2,20 @@
   "pages": [
     "pages/menu/menu",
     "pages/model/maintain",
-    "pages/model/print",
     "pages/dispatch/importList",
     "pages/dispatch/importDetail",
     "pages/dispatch/arriveList",
+    "pages/store/destory",
+
     "pages/print/importPrint",
     "pages/print/importPrintConfirm",
-    "pages/dispatch/exportList",
-    "pages/dispatch/exportDetail",
-    "pages/store/transferList",
-    "pages/store/transferDetail",
-    "pages/store/instoreList",
-    "pages/store/instoreConfirm",
+    "pages/model/print",
+
     "pages/sell/arrive",
+    "pages/store/storedetail",
+
     "pages/sell/sell",
+    "pages/sell/refund",
     "pages/menu/userInfo",
     "pages/menu/userList",
     "pages/menu/userPermission"

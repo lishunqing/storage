@@ -23,7 +23,7 @@ module.exports = {
               i.tenantid,\
               t.name tenantname,\
               IFNULL(i.remark,"") remark,\
-              DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
               i.createuser\
       from importlist i\
         left join tenant t\
@@ -67,7 +67,7 @@ module.exports = {
 
     var importlist;
     await driver.schema.raw(
-      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,i.createuser\
+      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,i.createuser\
       from importlist i\
         left join tenant t\
           on i.tenantid = t.tenantid\
@@ -152,7 +152,7 @@ module.exports = {
               fs.name fromstore,\
               ts.name tostore,\
               IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
               d.createuser\
       from dispatchlist d\
         left join store fs\
@@ -199,7 +199,7 @@ module.exports = {
               fs.name fromstore,\
               ts.name tostore,\
               IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
               d.createuser\
       from dispatchlist d\
         left join store fs\
@@ -281,8 +281,8 @@ module.exports = {
               d.tostore tostoreid,\
               ts.name tostore,\
               IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
-              DATE_FORMAT(d.finishtime,\'%Y-%m-%d %H:%I:%S\') finishtime,\
+              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
+              DATE_FORMAT(d.finishtime,\'%Y-%m-%d %H:%i:%S\') finishtime,\
               d.createuser\
       from dispatchlist d\
         left join store fs\

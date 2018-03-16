@@ -1,6 +1,6 @@
 var config = require('../../config')
+var util = require('../../util')
 
-// pages/print/importPrintConfirm.js
 Page({
 
   /**

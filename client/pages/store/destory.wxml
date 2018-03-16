@@ -1,0 +1,81 @@
+<view class="area">
+  <view class="text" width="100%">
+    <view class="item" wx:if="{{storeNameList.length > 1}}">
+      <text class="item-title">地点</text>
+      <text class="item-value">{{storeNameList[Idx]}}</text>
+      <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}">  
+        <text>选择</text>
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">款号</text>
+      <input bindblur="codeInput" class="item-value" placeholder="输入款号查询所有库存" value="{{model.modelcode}}"/>  
+      <text bindtap="codeScan" class="item-picker">扫码</text>
+    </view>
+
+
+    <view class="item" wx:if="{{model.modelid}}">
+      <text class="item-title">名称</text>
+      <text class="item-disable">{{model.name}}</text>
+      <text class="item-picker"/>
+    </view>
+    <block wx:for="{{style}}" wx:key="{{styleid}}" wx:if="{{model.modelid}}">
+      <view class="item">
+        <text class="item-title">{{item.stylename}}</text>
+        <text class="item-disable">{{model['style' + item.styleid]}}</text>
+        <text class="item-picker"/>
+      </view>
+    </block>
+    <view class="item" wx:if="{{model.modelid}}">
+      <text class="item-title">价格</text>
+      <text class="item-disable">{{model.price}}</text>
+      <text class="item-picker"/>
+    </view>
+
+    <view class="table" wx:if="{{!model.modelid}}">
+      <view class="th">
+        <view class="tdcode">{{mode == 1?'款号':'地点'}}</view>
+        <view class="tdname">名称</view>
+        <view class="tdstyle1">{{style[0].stylename}}</view>
+        <view class="tdstyle2">{{style[1].stylename}}</view>
+        <view class="tdprice">价格</view>
+        <view class="tdamount">库存</view>
+        <view class="tdconfirm" wx:if="{{mode == 1}}">确认</view>
+      </view>
+      <block wx:for="{{list}}" wx:key="{{modelid}}">
+        <view class="tr" bindtap="choose" wx:if="{{item.amount > 0}}" id="{{index}}">
+          <view class="tdcode">{{mode == 1?item.modelcode:item.storename}}</view>
+          <view class="tdname">{{item.name}}</view>
+          <view class="tdstyle1">{{item.style1}}</view>
+          <view class="tdstyle2">{{item.style2}}</view>
+          <view class="tdprice">{{item.price}}</view>
+          <view class="tdamount">{{item.amount}}</view>
+          <view class="{{item.amount > item.confirmamount?'tdnoconfirm':'tdconfirm'}}" wx:if="{{mode == 1}}">{{item.confirmamount}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>
+
+<block wx:for="{{itemlist}}" wx:key="{{item}}" wx:if="{{model.modelid}}">
+  <view class="area">
+    <view class="table">
+      <view class="th">
+        <view class="tdseqtag">序号</view>
+        <view class="tdseq">{{index + 1}}</view>
+        <view class="tdstattag">状态</view>
+        <view class="{{item.storeid == 0?'tdstattag':'tdstat'}}">{{item.state}}</view>
+        <view class="{{item.storeid == 0?'tdstattag':'tddest'}}" id="{{item.item}}" bindtap="destory">{{item.storeid == 0?'--':'核销'}}</view>
+      </view>
+      
+      <block wx:for="{{item.record}}" wx:for-item="record" wx:key="{{rectime}}">
+        <view class="tr">
+          <view class="tdtime">{{record.rectime}}</view>
+          <view class="tdseq">{{record.recname}}</view>
+          <view class="tdseq">{{record.recstore}}</view>
+          <view class="tdseq">{{record.rection}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</block>

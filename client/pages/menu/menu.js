@@ -1,5 +1,5 @@
-// menu.js
 var config = require('../../config')
+var util = require('../../util')
 
 Page({
 
@@ -46,6 +46,13 @@ Page({
                 m[per[x].privilegeid] = true;
               }
               that.setData({ permissions: m });
+            },
+            fail: function (err) {
+             wx.showModal({
+                title: '网络异常',
+                content: '详细信息：' + err.errMsg,
+                showCancel: false
+              })
             }
           });
         } else {
@@ -70,11 +77,13 @@ Page({
       url: "/pages/dispatch/arriveList",
     });
   },
-  exportList: function (e) {
+  destory: function (e) {
     wx.navigateTo({
-      url: "/pages/dispatch/exportList",
+      url: "/pages/store/destory",
     });
   },
+
+
   importPrint: function (e) {
     wx.navigateTo({
       url: "/pages/print/importPrint",
@@ -85,14 +94,25 @@ Page({
       url: "/pages/model/print",
     });
   },
-  instoreList: function (e) {
+
+  arrivestore: function (e) {
     wx.navigateTo({
-      url: "/pages/store/instoreList",
+      url: "/pages/sell/arrive",
     });
   },
-  transferList: function (e) {
+  storedetail: function (e) {
     wx.navigateTo({
-      url: "/pages/store/transferList",
+      url: "/pages/store/storedetail",
+    });
+  },
+  sell: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/sell",
+    });
+  },
+  refund: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/refund",
     });
   },
   userInfo: function (e) {
@@ -105,14 +125,5 @@ Page({
       url: "/pages/menu/userList",
     });
   },
-  arrivestore: function (e) {
-    wx.navigateTo({
-      url: "/pages/sell/arrive",
-    });
-  },
-  sell: function (e) {
-    wx.navigateTo({
-      url: "/pages/sell/sell",
-    });
-  },
+
 })

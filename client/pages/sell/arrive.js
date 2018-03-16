@@ -1,4 +1,5 @@
 var config = require('../../config')
+var util = require('../../util')
 
 Page({
 
@@ -44,7 +45,6 @@ Page({
     })
 
     that.storeInput({ detail: { value: 0 } });
-    that.loadList();
     setInterval(function () { that.codeScan();}, 100);
   },
   storeInput: function (e) {
@@ -75,6 +75,7 @@ Page({
       style: tenantStyle,
       Idx: idx
     })
+    that.loadList();
   },
   starting: function() {
     var that = this;
@@ -103,6 +104,7 @@ Page({
         var modelid = parseInt(text.substring(text.indexOf('&2=') + 3, text.indexOf('&3=')));
         var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='))
         var timestamp = text.substring(text.indexOf('&4=') + 3)
+        util.showBusy('工作中');
         wx.request({
           url: `${config.service.host}/weapp/item/add`,
           data: [loginInfo, {
@@ -113,10 +115,10 @@ Page({
           }],
           method: 'POST',
           success: function (result) {
-            that.loadList();
+            util.stopBusy();
           },
           fail: function (err) {
-            console.log(err);
+            util.showModel('网络异常', err);
           }
         })
       },
@@ -124,6 +126,7 @@ Page({
         that.setData({
           stoping: true,
         });
+        that.loadList();
       },
       complete: (res) => {
         that.setData({

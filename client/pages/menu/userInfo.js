@@ -1,5 +1,6 @@
 var config = require('../../config')
-// pages/menu/userInfo.js
+var util = require('../../util')
+
 Page({
 
   /**

@@ -34,7 +34,7 @@ module.exports = {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
 
-    await driver.schema.raw('select i.recid,m.*,u.username,i.action,DATE_FORMAT(i.actime,\'%H:%I\') actime from itemrec i left join model m on m.modelid = i.modelid left join user u on u.userid = i.userid where i.storeid = ? and i.action = ? and i.actime >= DATE_FORMAT(CURRENT_TIMESTAMP,\'%Y-%m-%d 00:00:00\')', [
+    await driver.schema.raw('select i.recid,m.*,u.username,i.action,DATE_FORMAT(i.actime,\'%H:%i\') actime from itemrec i left join model m on m.modelid = i.modelid left join user u on u.userid = i.userid where i.storeid = ? and i.action = ? and i.actime >= DATE_FORMAT(CURRENT_TIMESTAMP,\'%Y-%m-%d 00:00:00\')', [
       arg.storeid,
       arg.action,
     ]).then(result => {

@@ -65,7 +65,7 @@ module.exports = {
               fs.name fromstore,\
               ts.name tostore,\
               IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%I:%S\') createtime,\
+              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
               d.createuser\
       from dispatchlist d\
         left join store fs\

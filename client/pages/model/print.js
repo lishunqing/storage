@@ -1,4 +1,5 @@
 var config = require('../../config')
+var util = require('../../util')
 
 Page({
 

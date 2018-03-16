@@ -1,4 +1,4 @@
-var config = require('../../config.js')
+var config = require('../../config')
 var util = require('../../util')
 
 Page({
@@ -7,13 +7,16 @@ Page({
    * 页面的初始数据
    */
   data: {
+    scaning: false,
+    stoping: true,
+    mode: 1,//1：本店库存，2:指定款号查库存，3：库存盘点
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var that = this
+    var that = this;
 
     var permission = wx.getStorageSync('permission');
     var storeIDList = [];
@@ -40,10 +43,10 @@ Page({
       storeIDList: storeIDList,
       storeNameList: storeNameList,
       tenantIDList: tenantIDList,
-      choosed:false,
     })
 
     that.storeInput({ detail: { value: 0 } });
+    setInterval(function () { that.codeScan(); }, 100);
   },
   storeInput: function (e) {
     var that = this;
@@ -71,67 +74,65 @@ Page({
       modelNameList: modelnamelist,
       styleValueList: stylevaluelist,
       style: tenantStyle,
-      Idx: idx
+      Idx: idx,
+      model:{},
     })
-    that.loadlist();
+    that.loadList({
+      storeid: that.data.storeIDList[that.data.Idx],
+    },1);
   },
   codeInput: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    var model = { modelcode: e.detail.value,};
+
     if (!e.detail.value) {
       that.setData({
-        modellist: [],
-        choosed: false,
-        model: model,
+        list: [],
+        mode: 2,
+        model: { modelcode: e.detail.value},
       })
       return;
     }
     //尝试获取款号
-    wx.request({
-      url: `${config.service.host}/weapp/store/query`,
-      data: [loginInfo, {
-        tenantid: that.data.tenantIDList[that.data.Idx],
-        storeid: that.data.storeIDList[that.data.Idx],
-        modelcode: e.detail.value,
-      }],
-      method: 'POST',
-      success: function (result) {
-        if (result.data[0].length > 0) {
-          var m = result.data[0];
-          that.setData({
-            modellist: m,
-            choosed: false,
-            model: model,
-          })
-        }
-        else {
-          that.setData({
-            modellist: [],
-            choosed: false,
-            model: model,
-          })
-        }
-      },
-      fail: function (err) {
-        console.log(err);
-      }
-    })
+    that.loadList({
+      tenantid: that.data.tenantIDList[that.data.Idx],
+      modelcode: e.detail.value,
+    },2);
   },
-  choose: function (e) {
-    var that = this;
-    var now = new Date();
-    that.setData({
-      choosed: true,
-      seq: '',
-      model: that.data.modellist[e.currentTarget.id],
-      date: util.getDate(now),
-      time: util.getMinute(now),
-    });
-  },
-  codeScan:function(e){
+  tagScan: function(e){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+    wx.scanCode({
+      onlyFromCamera: true,
+      scanType: ['qrCode'],
+      success: (res) => {
+        var text = res.result;
+        text = text.substr(text.indexOf('?'));
+        var modelcode = text.substring(text.indexOf('1=') + 2, text.indexOf('&2='));
+        var modelid = parseInt(text.substring(text.indexOf('&2=') + 3, text.indexOf('&3=')));
+        var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='));
+        var timestamp = text.substring(text.indexOf('&4=') + 3);
+        that.codeInput({ detail: { value: modelcode } });
+      },
+    });
+  },
+  starting: function () {
+    var that = this;
+    that.setData({
+      stoping: false,
+    })
+  },
+  codeScan: function () {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+
+    if (that.data.scaning || that.data.stoping) {
+      return;
+    }
+    that.setData({
+      scaning: true,
+    });
+
     wx.scanCode({
       onlyFromCamera: true,
       scanType: ['qrCode'],
@@ -143,107 +144,62 @@ Page({
         var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='))
         var timestamp = text.substring(text.indexOf('&4=') + 3)
         wx.request({
-          url: `${config.service.host}/weapp/store/query`,
+          url: `${config.service.host}/weapp/item/add`,
           data: [loginInfo, {
+            item: timestamp + '.' + sequence,
             modelid: modelid,
             storeid: that.data.storeIDList[that.data.Idx],
+            action: '盘点',
           }],
           method: 'POST',
           success: function (result) {
-            var now = new Date();
-            that.setData({
-              model: result.data[0][0],
-              seq: timestamp + '.' + sequence,
-              choosed: true,
-              date: util.getDate(now),
-              time: util.getMinute(now),
-            })
           },
           fail: function (err) {
-            util.showModel("失败",err);
+            wx.showModal({
+              title: '网络异常',
+              content: '详细信息：' + err.errMsg,
+              showCancel: false
+            })
           }
         })
       },
       fail: (res) => {
         that.setData({
-          model: {},
-          choosed:false,
-        })
+          stoping: true,
+        });
+        that.loadList({
+          storeid: that.data.storeIDList[that.data.Idx],
+          action: '盘点',
+        },3);
       },
-    });
-  },
-  dateInput: function (e) {
-    var that = this;
-    that.setData({
-      date: e.detail.value,
-    });
-  },  
-  timeInput: function (e) {
-    var that = this;
-    that.setData({
-      time: e.detail.value,
-    });
-  },
-  sell:function(e){
-    var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
-
-    util.showBusy('工作中');
-    wx.request({
-      url: `${config.service.host}/weapp/store/addsell`,
-      data: [loginInfo, {
-        storeid: that.data.storeIDList[that.data.Idx],
-        modelid: that.data.model.modelid,
-        item:that.data.seq,
-        selluser: loginInfo.userid,
-        selltime: that.data.date + ' ' + that.data.time + ':00',
-        actualprice : that.data.model.price,
-      }],
-      method: 'POST',
-      success: function (result) {
-        if (result.data.code == 0){
-          util.showSuccess('已提交');
-        }else{
-          util.showModel('错误', '可能是重复出售了，详细信息：\n' + result.data.error);
-        }
+      complete: (res) => {
         that.setData({
-          choosed: false,
-          model: {},
-        })
-        that.loadlist();
+          scaning: false,
+        });
       },
-      fail: function (err) {
-        console.log(err);
-      }
-    })    
+    });
   },
-  loadlist: function(){
+  loadList: function (arg,mode) {
+    //获取本店库存
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-
-    //尝试获取款号
     wx.request({
-      url: `${config.service.host}/weapp/store/querysell`,
-      data: [loginInfo, {
-        storeid: that.data.storeIDList[that.data.Idx],
-      }],
+      url: `${config.service.host}/weapp/store/query`,
+      data: [loginInfo, arg],
       method: 'POST',
       success: function (result) {
-        if (result.data[0].length > 0) {
-          that.setData({
-            list: result.data[0],
-          })
-        }
-        else {
-          that.setData({
-            list: [],
-          })
-        }
-
+        that.setData({
+          list: result.data[0],
+          mode: mode,
+        })
       },
       fail: function (err) {
-        console.log(err);
+        wx.showModal({
+          title: '网络异常',
+          content: '详细信息：' + err.errMsg,
+          showCancel: false
+        })
       }
-    })    
-  }
+    })
+  },
 })

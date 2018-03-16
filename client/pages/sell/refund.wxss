@@ -1,4 +1,3 @@
-/* pages/dispatch/exportDetail.wxss */
 
 page {
   background: #f6f6f6;
@@ -6,10 +5,9 @@ page {
   flex-direction: column;
   justify-content: flex-start;
 }
-
 .area {
   margin-top: 20rpx;
-  width: 100%;
+  width: 100vw;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-left: none;
@@ -18,7 +16,6 @@ page {
   flex-direction: row;
   align-items: center;
 }
-
 .text {
   background: #fff;
   width: 100%;
@@ -28,7 +25,6 @@ page {
   flex-direction: column;
   align-items: left;
 }
-
 .item {
   font-size: 17px;
   width: 100%;
@@ -40,13 +36,11 @@ page {
   flex-direction: row;
   align-items: center;
 }
-
 .item-title {
   width: 40px;
   margin: 20rpx;
   align-items: middle;
 }
-
 .item-value {
   color: #007aff;
   flex-grow: 2;
@@ -55,25 +49,11 @@ page {
   color: grey;
   flex-grow: 2;
 }
-
-.radio {
-  width: 50%;
-  margin: 20rpx;
-  color: #f70;
-}
-
 .item-picker {
   width: 40px;
   margin: 20rpx;
   color: #f70;
 }
-
-.delete {
-  font-size: 17px;
-  height: 100%;
-  align-items: right;
-}
-
 .button {
   margin-top: 20rpx;
   font-size: 17px;
@@ -81,14 +61,12 @@ page {
   width: 100%;
   align-items: center;
 }
-
 .table {
   margin-top: 20rpx;
   border-top: 3px solid black;
-  border-left: 1px solid black;
   border-bottom: 2px solid black;
-  font-size: 17px;
-  height: 100%;
+  font-size: 3vw;
+  width: 100vw;
 }
 .th {  
   width: 100%;  
@@ -96,45 +74,51 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;  
-  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-bottom: 2px solid black;
   text-align: center;
 }  
 .tr {  
   width: 100%;
   background-color: #fff;
-  display:flex;
+  display: flex;
   justify-content: space-between;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
   align-items: center;  
 }  
 .tdcode {  
-  padding: 10px;
-  border-bottom: 1px solid black;
+  padding: 1vw;
   border-right: 1px solid black;
-  text-align: center;
-
-  width:40%;
+  width:30vw;
 }
 .tdname {  
-  padding: 10px;
-  border-bottom: 1px solid black;
+  padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-
-  width:20%;
+  width:16vw;
 }
-.tdstore {  
-  padding: 10px;
-  border-bottom: 1px solid black;
+.tdstyle1 {  
+  padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-
-  width:20%;
+  width:12vw;
 }
-.tdamount {  
-  padding: 10px;
-  border-bottom: 1px solid black;
+.tdstyle2 {  
+  padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  
-  width:20%;
+  width:9vw;
+}
+.tdprice {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:9vw;
+}
+.tduser {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:14vw;
 }
