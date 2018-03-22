@@ -21,6 +21,13 @@
 <view class="area" wx:if="{{permissions[3]}}">
     <button bindtap="sell" class="button" type="default">销售</button>
     <button bindtap="refund" class="button" type="default">退货</button>
+    <button bindtap="baditem" class="button" type="default">次品退仓</button>
+</view>
+
+
+<view class="area" wx:if="{{permissions[11]}}">
+    <button bindtap="sellreport" class="button" type="default">日销售报表</button>
+    <button bindtap="sellmodel" class="button" type="default">款式销售报表</button>
 </view>
 
 <view class="area">

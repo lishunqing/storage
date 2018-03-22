@@ -1,48 +1,10 @@
 /* pages/menu/userList.wxss */
-.area {
-    margin-top: 20rpx;
-    width: 100%;
-    background: #FFF;
-    border: 1px solid rgba(0, 0, 0, .1);
-    border-left: none;
-    border-right: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.buttom {
-    font-size: 17px;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-}
 
 
 .table {
-  margin-top: 20rpx;
-  border-top: 3px solid black;
-  border-left: 1px solid black;
-  border-bottom: 2px solid black;
-  font-size: 17px;
-  height: 100%;
+  font-size: 5vw;
 }
-.th {
-  width: 100%;  
-  background-color: #dadada;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;  
-  border-bottom: 1px solid black;
-  text-align: center;
-}
-.tr {  
-  width: 100%;
-  background-color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;  
-}  
+
 .tdname {  
   padding: 10px;
   border-bottom: 1px solid black;

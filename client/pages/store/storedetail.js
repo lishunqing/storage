@@ -86,23 +86,17 @@ Page({
       storeid: that.data.storeIDList[that.data.Idx],
     },1);
   },
-  ret: function (e) {
-    var that = this;
-    that.loadList({
-      storeid: that.data.storeIDList[that.data.Idx],
-    }, 1);
-  },
   codeInput: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
 
+    that.setData({
+      list: [],
+      totalamount: 0,
+      mode: 2,
+      model: { modelcode: e.detail.value },
+    })
     if (!e.detail.value) {
-      that.setData({
-        list: [],
-        totalamount: 0,
-        mode: 2,
-        model: { modelcode: e.detail.value},
-      })
       return;
     }
     //尝试获取款号
@@ -154,6 +148,12 @@ Page({
         util.showModel('网络异常', err);
       }
     })
+  },
+  back: function (e) {
+    var that = this;
+    that.setData({
+      choosed:false,
+    });
   },
   choose: function (e) {
     var that = this;
@@ -220,6 +220,7 @@ Page({
         }
 
         that.setData({
+          model: that.data.list[e.currentTarget.id],
           itemrec: result.data[0],
           itemlist: itemlist,
           choosed: true,

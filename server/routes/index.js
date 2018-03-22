@@ -60,6 +60,9 @@ router.post('/storage/addModel', controllers.model.add)
 router.post('/storage/delModel', controllers.model.del)
 router.post('/storage/modModel', controllers.model.mod)
 
+router.post('/report/sellreport', controllers.report.sellreport)
+router.post('/report/sellmodel', controllers.report.sellmodel)
+
 
 router.post('/dispatch/queryImportList', controllers.dispatch.queryImportList)
 router.post('/dispatch/addImportList', controllers.dispatch.addImportList)

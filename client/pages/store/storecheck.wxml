@@ -2,7 +2,7 @@
   <view class="text" width="100%">
     <view class="item" wx:if="{{storeNameList.length > 1}}">
       <text class="item-title">地点</text>
-      <text class="item-value" bindtap="ret">{{storeNameList[Idx]}}</text>
+      <text class="item-value">{{storeNameList[Idx]}}</text>
       <picker class="item-picker" bindchange="storeInput" range="{{storeNameList}}" value="{{Idx}}">  
         <text>选择</text>
       </picker>
@@ -14,7 +14,8 @@
       <text class="item-picker"></text>
     </view>
 
-    <button bindtap="starting" class="button" type="primary">开始盘点</button>
+    <button bindtap="starting" class="button" type="primary" wx:if="{{!choosed}}">开始盘点</button>
+    <button bindtap="back" class="button" type="primary" wx:if="{{choosed}}">返回列表</button>
 
     <view class="table" wx:if="{{!choosed}}">
       <view class="th">

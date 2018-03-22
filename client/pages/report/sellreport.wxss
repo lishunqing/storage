@@ -1,47 +1,34 @@
+/* pages/report/sellreport.wxss */
 
-.tdcode {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  width:20vw;
-}
-.tdname {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:20vw;
-}
-.tdstyle1 {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:13vw;
-}
-.tdstyle2 {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:9vw;
-}
-.tdprice {  
+.tdsellcount {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
   width:10vw;
 }
-.tdtotal {  
+.tdsellprice {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  width:9vw;
+  width:13vw;
 }
-.tdarrived {  
+.tdrefundcount {  
   padding: 1vw;
   border-right: 1px solid black;
   text-align: center;
-  width:9vw;
+  width:7vw;
 }
-.tdamount {  
+.tdrefundprice {  
   padding: 1vw;
+  border-right: 1px solid black;
   text-align: center;
-  width:9vw;
+  width:10vw;
+}
+.tdsum {  
+  border-left: 1px white;
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:40vw;
+  flex-grow: 2;
 }

@@ -153,6 +153,13 @@ Page({
     //获取本店库存
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
+
+    if (arg == undefined)
+    {
+      arg = that.data.arg;
+      mode = that.data.mode;
+    }
+
     util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/store/query`,
@@ -163,6 +170,8 @@ Page({
           list: result.data[0],
           seq:"",
           mode: mode,
+          arg: arg,
+          model: arg,
         })
         util.stopBusy();
       },
@@ -170,6 +179,10 @@ Page({
         util.showModel('网络异常', err);
       }
     })
+  },
+  back:function(e){
+    var that = this;
+    that.loadList();
   },
   loadItem:function(modelid){
     var that = this;
@@ -248,37 +261,54 @@ Page({
       }
     })    
   },
-  destory:function(e){
+
+  destory: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
 
-    for(var x in that.data.itemlist){
-      if (that.data.itemlist[x].item == e.target.id){
-        if (that.data.itemlist[x].storeid == 0){
+    for (var x in that.data.itemlist) {
+      if (that.data.itemlist[x].item == e.target.id) {
+        if (that.data.itemlist[x].storeid == 0) {
           return;
-        }else{
+        } else {
           break;
         }
       }
     }
-
-    util.showBusy();
-    wx.request({
-      url: `${config.service.host}/weapp/item/add`,
-      data: [loginInfo, {
-        item: e.target.id,
-        modelid: that.data.model.modelid,
-        storeid: 0,
-        action: '核销',
-      }],
-      method: 'POST',
-      success: function (result) {
-        that.loadItem(that.data.model.modelid);
-        util.stopBusy();
-      },
-      fail: function (err) {
-        util.showModel('网络异常', err);
+    wx.showModal({
+      title: '提示',
+      content: '确定这件货已经售出，只是漏扫码登记了么？',
+      success: function (sm) {
+        if (sm.confirm) {
+          util.showBusy();
+          wx.request({
+            url: `${config.service.host}/weapp/store/addsell`,
+            data: [loginInfo, {
+              storeid: that.data.storeIDList[that.data.Idx],
+              modelid: that.data.model.modelid,
+              item: e.target.id,
+              action: '补售',
+              selluser: loginInfo.userid,
+              selltime: util.getTime(new Date()),
+              actualprice: that.data.model.price,
+            }],
+            method: 'POST',
+            success: function (result) {
+              if (result.data.code == 0) {
+                util.showSuccess('已提交');
+              } else {
+                util.showModel('错误', '可能是重复出售了，详细信息：\n' + result.data.error);
+              }
+              that.loadItem(that.data.model.modelid);
+            },
+            fail: function (err) {
+              util.showModel('网络异常', err);
+            }
+          })
+        } else if (sm.cancel) {
+          console.log('用户点击取消')
+        }
       }
     })
-  }
+  },
 })

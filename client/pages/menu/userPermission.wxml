@@ -9,8 +9,8 @@
       <text class="item-title">备注</text>
       <text class="item-value">{{user.userremark}}</text>
     </view>
-    <button class="buttom" bindtap="disable" type="warn" wx:if="{{!user.disabled}}">暂停用户权限</button>
-    <button class="buttom" bindtap="disable" type="primary" wx:if="{{user.disabled}}">激活用户权限</button>
+    <button class="button" bindtap="disable" type="warn" wx:if="{{!user.disabled}}">暂停用户权限</button>
+    <button class="button" bindtap="disable" type="primary" wx:if="{{user.disabled}}">激活用户权限</button>
 </view>
 
 
@@ -30,5 +30,5 @@
 
 
 <view class="area">
-    <button class="buttom" bindtap="save" type="primary">保存权限</button>
+    <button class="button" bindtap="save" type="primary">保存权限</button>
 </view>

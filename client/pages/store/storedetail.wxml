@@ -2,7 +2,7 @@
   <view class="text" width="100%">
     <view class="item" wx:if="{{storeNameList.length > 1}}">
       <text class="item-title">地点</text>
-      <text class="item-value" bindtap="ret">{{storeNameList[Idx]}}</text>
+      <text class="item-value">{{storeNameList[Idx]}}</text>
       <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}" value="{{Idx}}">  
         <text>选择</text>
       </picker>
@@ -12,6 +12,7 @@
       <input bindblur="codeInput" class="item-value" placeholder="输入款号查询所有库存" value="{{model.modelcode}}"/>  
       <text bindtap="tagScan" class="item-picker">扫码</text>
     </view>
+
 
     <view class="item" wx:if="{{!choosed}}">
       <text class="item-title">库存</text>
@@ -42,6 +43,27 @@
   </view>
 </view>
 
+
+    <view class="item" wx:if="{{choosed}}">
+      <text class="item-title">名称</text>
+      <text class="item-disable">{{model.name}}</text>
+      <text class="item-picker"/>
+    </view>
+    <block wx:for="{{style}}" wx:key="{{styleid}}" wx:if="{{choosed}}">
+      <view class="item">
+        <text class="item-title">{{item.stylename}}</text>
+        <text class="item-disable">{{model['style' + item.styleid]}}</text>
+        <text class="item-picker"/>
+      </view>
+    </block>
+    <view class="item" wx:if="{{choosed}}">
+      <text class="item-title">价格</text>
+      <text class="item-disable">{{model.price}}</text>
+      <text class="item-picker"/>
+    </view>
+
+
+<button bindtap="back" class="button" type="primary" wx:if="{{choosed}}">返回列表</button>
 
 <block wx:for="{{itemlist}}" wx:key="{{item}}" wx:if="{{choosed}}">
   <view class="area">

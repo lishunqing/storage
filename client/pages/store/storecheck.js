@@ -90,12 +90,12 @@ Page({
       action: '盘点',
     }, 3);
   },
-  ret: function(e){
+
+  back: function (e) {
     var that = this;
-    that.loadList({
-      storeid: that.data.storeIDList[that.data.Idx],
-      action: '盘点',
-    }, 3);    
+    that.setData({
+      choosed: false,
+    });
   },
   starting: function () {
     var that = this;

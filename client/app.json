@@ -14,9 +14,14 @@
     "pages/sell/arrive",
     "pages/store/storedetail",
     "pages/store/storecheck",
+    "pages/sell/baditem",
     
     "pages/sell/sell",
     "pages/sell/refund",
+
+    "pages/report/sellreport",
+    "pages/report/sellmodel",
+    
     "pages/menu/userInfo",
     "pages/menu/userList",
     "pages/menu/userPermission"

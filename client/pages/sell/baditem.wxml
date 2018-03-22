@@ -1,0 +1,32 @@
+<view class="area">
+  <view class="text" width="100%">
+
+    <view class="item">
+      <text class="item-title">款号</text>
+      <input bindblur="codeInput" wx:if="{{(1==2)}}" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
+      <text class="item-disable">{{model.modelcode}}</text>
+      <text bindtap="codeScan" class="item-picker">扫码</text>
+    </view>
+
+    <view class="item" wx:if="{{choosed}}">
+      <text class="item-title">名称</text>
+      <text class="item-disable">{{model.name}}</text>
+      <text class="item-picker"/>
+    </view>
+    <block wx:for="{{style}}" wx:key="{{styleid}}" wx:if="{{choosed}}">
+      <view class="item">
+        <text class="item-title">{{item.stylename}}</text>
+        <text class="item-disable">{{model['style' + item.styleid]}}</text>
+        <text class="item-picker"/>
+      </view>
+    </block>
+    <view class="item" wx:if="{{choosed}}">
+      <text class="item-title">价格</text>
+      <text class="item-disable">{{model.price}}</text>
+      <text class="item-picker"/>
+    </view>
+
+    <button bindtap="bad" class="button" type="primary" wx:if="{{choosed}}">登记为次品</button>
+
+  </view>
+</view>

@@ -206,6 +206,7 @@ Page({
         storeid: that.data.storeIDList[that.data.Idx],
         modelid: that.data.model.modelid,
         item:that.data.seq,
+        action:'售出',
         selluser: loginInfo.userid,
         selltime: that.data.date + ' ' + that.data.time + ':00',
         actualprice : that.data.model.price,
@@ -226,7 +227,7 @@ Page({
       fail: function (err) {
         util.showModel('网络异常', err);
       }
-    })    
+    })
   },
   loadlist: function(){
     var that = this;
@@ -241,16 +242,17 @@ Page({
       }],
       method: 'POST',
       success: function (result) {
-        if (result.data[0].length > 0) {
-          that.setData({
-            list: result.data[0],
-          })
+        var totalcount = 0;
+        var totalprice = 0;
+        for (var x in result.data[0]) {
+          ++totalcount;
+          totalprice += result.data[0][x].price;
         }
-        else {
-          that.setData({
-            list: [],
-          })
-        }
+        that.setData({
+          list: result.data[0],
+          totalcount: totalcount,
+          totalprice: totalprice,
+        })
         util.stopBusy();
       },
       fail: function (err) {

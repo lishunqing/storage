@@ -108,6 +108,11 @@ Page({
       url: "/pages/store/storecheck",
     });
   },
+  baditem: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/baditem",
+    });
+  },
   sell: function (e) {
     wx.navigateTo({
       url: "/pages/sell/sell",
@@ -116,6 +121,16 @@ Page({
   refund: function (e) {
     wx.navigateTo({
       url: "/pages/sell/refund",
+    });
+  },
+  sellreport: function (e) {
+    wx.navigateTo({
+      url: "/pages/report/sellreport",
+    });
+  },
+  sellmodel: function (e) {
+    wx.navigateTo({
+      url: "/pages/report/sellmodel",
     });
   },
   userInfo: function (e) {

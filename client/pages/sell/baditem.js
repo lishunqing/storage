@@ -1,4 +1,4 @@
-var config = require('../../config')
+var config = require('../../config.js')
 var util = require('../../util')
 
 Page({
@@ -49,6 +49,7 @@ Page({
     })
 
     that.storeInput({ detail: { value: idx } });
+    that.codeScan();
   },
   storeInput: function (e) {
     var that = this;
@@ -84,49 +85,47 @@ Page({
   codeInput: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-
+    var model = { modelcode: e.detail.value, };
     if (!e.detail.value) {
       that.setData({
         modellist: [],
-        model: { modelcode: e.detail.value, },
+        choosed: false,
+        model: model,
       })
       return;
     }
     //尝试获取款号
     util.showBusy();
     wx.request({
-      url: `${config.service.host}/weapp/store/querysell`,
+      url: `${config.service.host}/weapp/store/query`,
       data: [loginInfo, {
         tenantid: that.data.tenantIDList[that.data.Idx],
+        storeid: that.data.storeIDList[that.data.Idx],
         modelcode: e.detail.value,
       }],
       method: 'POST',
       success: function (result) {
         if (result.data[0].length > 0) {
+          var m = result.data[0];
           that.setData({
-            modellist: result.data[0],
-            model: { modelcode: e.detail.value, },
+            modellist: m,
+            choosed: false,
+            model: model,
           })
-          util.stopBusy();
         }
         else {
           that.setData({
             modellist: [],
-            model: { modelcode: e.detail.value, },
+            choosed: false,
+            model: model,
           })
-          util.showModel('错误', '没有查询到该标签的销售记录。');
         }
+        util.stopBusy();
       },
       fail: function (err) {
         util.showModel('网络异常', err);
       }
     })
-  },
-  choose: function (e) {
-    var that = this;
-    that.setData({
-      model: that.data.modellist[e.currentTarget.id],
-    });
   },
   codeScan: function (e) {
     var that = this;
@@ -135,31 +134,30 @@ Page({
       onlyFromCamera: true,
       scanType: ['qrCode'],
       success: (res) => {
+        util.showBusy();
         var text = res.result;
         text = text.substr(text.indexOf('?'));
         var modelcode = text.substring(text.indexOf('1=') + 2, text.indexOf('&2='))
         var modelid = parseInt(text.substring(text.indexOf('&2=') + 3, text.indexOf('&3=')));
         var sequence = text.substring(text.indexOf('&3=') + 3, text.indexOf('&4='))
         var timestamp = text.substring(text.indexOf('&4=') + 3)
-        util.showBusy('查询中');
         wx.request({
-          url: `${config.service.host}/weapp/store/querysell`,
+          url: `${config.service.host}/weapp/store/query`,
           data: [loginInfo, {
-            item: timestamp + '.' + sequence,
+            modelid: modelid,
+            storeid: that.data.storeIDList[that.data.Idx],
           }],
           method: 'POST',
           success: function (result) {
-            if (result.data[0].length > 0){
-              that.setData({
-                model: result.data[0][0],
-              })
-              util.stopBusy();
-            }else{
-              that.setData({
-                model: { modelcode: modelcode},
-              })
-              util.showModel('错误', '没有查询到该标签的销售记录。');
-            }
+            var now = new Date();
+            that.setData({
+              model: result.data[0][0],
+              seq: timestamp + '.' + sequence,
+              choosed: true,
+              date: util.getDate(now),
+              time: util.getMinute(now),
+            })
+            util.stopBusy();
           },
           fail: function (err) {
             util.showModel('网络异常', err);
@@ -174,74 +172,31 @@ Page({
       },
     });
   },
-  refund: function (e) {
-    var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
-    util.showBusy('工作中');
-    wx.request({
-      url: `${config.service.host}/weapp/item/add`,
-      data: [loginInfo, {
-        item: that.data.model.item,
-        modelid: that.data.model.modelid,
-        storeid: that.data.storeIDList[that.data.Idx],
-        action: '退货',
-      }],
-      method: 'POST',
-      success: function (result) {
-        util.showSuccess('成功');
-        that.setData({
-          model:{},
-          modellist:[],
-        })
-      },
-      fail: function (err) {
-        util.showModel('网络异常', err);
-      }
-    })
-  },
-  badrefund: function (e) {
-    var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
 
+  bad: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
     wx.showModal({
       title: '提示',
-      content: '确定要将这件货退货，并登记为次品退仓吗？',
+      content: '确定要将这件货登记为次品吗？',
       success: function (sm) {
         if (sm.confirm) {
-          util.showBusy('退货中');
+          //确认登记为次品
+          util.showBusy();
           wx.request({
             url: `${config.service.host}/weapp/item/add`,
             data: [loginInfo, {
-              item: that.data.model.item,
+              item: that.data.seq,
               modelid: that.data.model.modelid,
-              storeid: that.data.storeIDList[that.data.Idx],
-              action: '退货',
+              storeid: 0,
+              action: '次品',
             }],
             method: 'POST',
             success: function (result) {
-              util.showSuccess('退货成功');
-              //确认登记为次品
-              util.showBusy('次品退仓');
-              wx.request({
-                url: `${config.service.host}/weapp/item/add`,
-                data: [loginInfo, {
-                  item: that.data.model.item,
-                  modelid: that.data.model.modelid,
-                  storeid: 0,
-                  action: '次品',
-                }],
-                method: 'POST',
-                success: function (result) {
-                  util.showSuccess('操作成功');
-                  that.setData({
-                    model: {},
-                    modellist: [],
-                  })
-                },
-                fail: function (err) {
-                  util.showModel('网络异常', err);
-                }
-              })
+              util.stopBusy();
+              wx.redirectTo({
+                url: "/pages/menu/menu",
+              });
             },
             fail: function (err) {
               util.showModel('网络异常', err);

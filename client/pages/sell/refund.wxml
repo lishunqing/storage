@@ -44,6 +44,7 @@
     </view>
 
     <button bindtap="refund" class="button" type="primary" wx:if="{{model.item}}">确认退货</button>
+    <button bindtap="badrefund" class="button" type="warn" wx:if="{{model.item}}">次品退货</button>
 
   </view>
 </view>
