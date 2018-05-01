@@ -1,47 +1,69 @@
-<view class="area">
+
+<form bindsubmit="addDetail">
   <view class="text" width="100%">
+
+    <view class="item">
+      <text class="item-title">店名</text>
+      <input bindblur="importInput" id="name" class="item-value" placeholder="输入进货店名" name="importname" value="{{importList.name}}"/>  
+      <text class="item-picker"></text>
+    </view>
+    <view class="item" wx:if="{{false}}">
+      <text class="item-title">前缀</text>
+      <input bindblur="importInput" id="perfix" class="item-value" placeholder="输入款号前缀" name="importperfix" value="{{importList.perfix}}"/>  
+      <text class="item-picker"></text>
+    </view>
+    <view class="item" wx:if="{{false}}">
+      <text class="item-title">款号</text>
+      <input bindblur="importInput" id="code" class="item-value" placeholder="输入款号数字" name="importcode" value="{{importList.code}}"/>  
+      <text class="item-picker"></text>
+    </view>
+
+  
     <view class="item">
       <text class="item-title">款号</text>
-      <input bindblur="codeInput" class="item-value" placeholder="输入款号" value="{{model.modelcode}}"/>  
-      <text wx:if="{{!existedModel}}" class="item-picker"></text>
+      <input bindblur="codeInput" class="item-value" placeholder="输入款号" name="modelcode" value="{{model.modelcode}}"/>
+      <text class="item-picker"></text>
     </view>
     <view class="item">
       <text class="item-title">名称</text>
-      <input wx:if="{{!existedModel}}" bindblur="nameInput" class="item-value" placeholder="输入或者选择名称" value="{{model.name}}"/>  
-      <picker wx:if="{{!existedModel}}" bindchange="nameInput" class="item-picker" id="p" range="{{modelNameList}}">  
+      <input wx:if="{{!model.modelid}}" bindblur="nameInput" class="item-value" placeholder="输入或者选择名称" name="name" value="{{model.name}}"/>  
+      <picker wx:if="{{!model.modelid}}" bindchange="nameInput" class="item-picker" id="p" range="{{modelNameList}}">  
         <text>选择</text>
       </picker>
-      <text wx:if="{{existedModel}}" class="item-disable">{{model.name}}</text>
+      <text wx:if="{{model.modelid}}" class="item-disable">{{model.name}}</text>
     </view>
     <block wx:for="{{style}}" wx:key="{{styleid}}">
     <view class="item">
       <text class="item-title">{{item.stylename}}</text>
-      <input bindblur="styleInput" class="item-value" id="{{item.styleid}}" placeholder="{{item.styleplaceholder}}" value="{{model['style' + item.styleid]}}"/>  
+      <input bindblur="styleInput" class="item-value" id="{{item.styleid}}" placeholder="{{item.styleplaceholder}}" name="{{'style' + item.styleid}}" value="{{model['style' + item.styleid]}}"/>  
       <picker bindchange="stylePicker" class="item-picker" id="{{item.styleid}}" range="{{styleValueList[item.styleid]}}"> 
         <text>选择</text>  
-      </picker>  
+      </picker>
     </view>
     </block>
     <view class="item">
       <text class="item-title">成本</text>
-      <input bindblur="costInput" class="item-value" type="digit" placeholder="输入成本价(可选)" value="{{model.cost}}"/>  
-      <text class="item-picker"></text>
+      <input wx:if="{{!model.id}}" bindblur="costInput" class="item-value" type="digit" placeholder="输入成本价(可选)" name="cost" value="{{model.cost}}"/>  
+      <text wx:if="{{!model.id}}" class="item-picker"></text>
+      <text wx:if="{{model.id}}" class="item-disable">{{model.cost}}</text> 
     </view>
     <view class="item">
       <text class="item-title">价格</text>
-      <input wx:if="{{!existedModel}}" bindblur="priceInput" class="item-value" type="digit" placeholder="输入标牌价格" value="{{model.price}}"/>  
-      <text wx:if="{{!existedModel}}" class="item-picker"></text>
-      <text wx:if="{{existedModel}}" class="item-disable">{{model.price}}</text>
+      <input wx:if="{{!model.modelid}}" bindblur="priceInput" class="item-value" type="digit" placeholder="输入标牌价格" name="price" value="{{model.price}}"/>  
+      <text wx:if="{{!model.modelid}}" class="item-picker"></text>
+      <text wx:if="{{model.modelid}}" class="item-disable">{{model.price}}</text>
     </view>
     <view class="item">
       <text class="item-title">数量</text>
-      <input bindblur="amountInput" class="item-value" type="number" placeholder="输入进货数量" value="{{amount}}"/>  
+      <input bindblur="amountInput" class="item-value" type="number" placeholder="输入进货数量" name="totalamount" value="{{model.totalamount}}"/>  
       <text class="item-picker"></text>
     </view>
-    <button bindtap="addDetail" class="button" type="primary">{{modelInList ? '更新进货数量':'新的进货条目'}}</button>
-    <button bindtap="delDetail" class="button" type="warn" wx:if="{{modelInList}}">删除进货条目</button>
+    <button formType="submit" class="button" type="primary">{{model.id ? '修改进货数量':'新的进货条目'}}</button>
+    <button bindtap="delDetail" class="button" type="warn" wx:if="{{model.id}}">删除进货条目</button>
   </view>
-</view>
+</form>
+
+
 <view class="table">
   <view class="th">
       <view class="tdcode">款号</view>
@@ -52,8 +74,8 @@
       <view class="tdamount">进货</view>
       <view class="tdarrived">到货</view>
   </view>
-  <block wx:for="{{list}}" wx:key="{{modelid}}">
-    <view class="tr" bindtap="choose" id="{{item.modelid}}">
+  <block wx:for="{{list}}" wx:key="{{id}}">
+    <view class="tr" bindtap="choose" id="{{index}}">
         <view class="tdcode">{{item.modelcode}}</view>
         <view class="tdname">{{item.name}}</view>
         <view class="tdstyle1">{{item.style1}}</view>

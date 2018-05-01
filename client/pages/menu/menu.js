@@ -98,6 +98,11 @@ Page({
       url: "/pages/sell/arrive",
     });
   },
+  storesend: function (e) {
+    wx.navigateTo({
+      url: "/pages/sell/send",
+    });
+  },
   storedetail: function (e) {
     wx.navigateTo({
       url: "/pages/store/storedetail",
@@ -121,6 +126,11 @@ Page({
   refund: function (e) {
     wx.navigateTo({
       url: "/pages/sell/refund",
+    });
+  },
+  storereport: function (e) {
+    wx.navigateTo({
+      url: "/pages/report/store/report",
     });
   },
   sellreport: function (e) {

@@ -1,0 +1,56 @@
+<view class="area" wx:if="{{mode == 1}}">
+  <view class="text" width="100%">
+    <view class="item" wx:if="{{storeNameList.length > 1}}">
+      <text class="item-title">地点</text>
+      <text class="item-value">{{storeNameList[Idx]}}</text>
+      <picker bindchange="storeInput" class="item-picker" range="{{storeNameList}}" value="{{Idx}}">  
+        <text>选择</text>
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">开始</text>
+      <text class="item-value">{{startDate}}</text>
+      <picker bindchange="startDateInput" class="item-picker" mode="date" value="{{startDate}}">  
+        <text>选择</text>
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">结束</text>
+      <text class="item-value">{{endDate}}</text>
+      <picker bindchange="endDateInput" class="item-picker" mode="date" value="{{endDate}}">  
+        <text>选择</text>
+      </picker>
+    </view>
+    <view class="item">
+      <text class="item-title">库存</text>
+      <text class="item-value">{{count + ' 件'}}</text>
+      <text class="item-picker"></text>
+    </view>
+    
+  </view>
+</view>
+
+<view class="table" wx:if="{{mode == 1}}">
+  <view class="th">
+      <view class="tddate" bindtap="sort" id="actime">日期</view>
+      <view class="td" bindtap="sort" id="售出">售出</view>
+      <view class="td" bindtap="sort" id="退货">退货</view>
+      <view class="td" bindtap="sort" id="核销">核销</view>
+      <view class="td" bindtap="sort" id="入库">入库</view>
+      <view class="td" bindtap="sort" id="调货">调货</view>
+      <view class="td" bindtap="sort" id="盘点">盘点</view>
+      <view class="td" bindtap="sort" id="次品">次品</view>
+  </view>
+  <block wx:for="{{reportlist}}" wx:key="{{actime}}">
+    <view class="tr">
+      <view class="tddate">{{item.actime}}</view>
+      <view class="tdo">{{item['售出']?item['售出']:0}}</view>
+      <view class="tdi">{{item['退货']?item['退货']:0}}</view>
+      <view class="tdo">{{item['核销']?item['核销']:0}}</view>
+      <view class="tdi">{{item['入库']?item['入库']:0}}</view>
+      <view class="tdo">{{item['调货']?item['调货']:0}}</view>
+      <view class="tdi">{{item['盘点']?item['盘点']:0}}</view>
+      <view class="tdo">{{item['次品']?item['次品']:0}}</view>
+    </view>
+  </block>
+</view>

@@ -34,13 +34,13 @@
       <view class="tdrefundprice" bindtap="sort" id="refundprice">退价</view>
   </view>
   <block wx:for="{{reportlist}}" wx:key="{{date}}">
-    <view class="tr" wx:if="{{item.display}}" bindtap="loaddetail" id="{{index}}">
+    <view class="tr" wx:if="{{item.display}}">
       <view class="tdcode">{{item.date}}</view>
       <view class="tdstorename">{{item.storename}}</view>
-      <view class="tdsellcount">{{item.sellcount}}</view>
-      <view class="tdsellprice">{{item.sellprice}}</view>
-      <view class="tdrefundcount">{{item.refundcount}}</view>
-      <view class="tdrefundprice">{{item.refundprice}}</view>
+      <view class="tdsellcount" bindtap="loadsell" id="{{index}}">{{item.sellcount}}</view>
+      <view class="tdsellprice" bindtap="loadsell" id="{{index}}">{{item.sellprice}}</view>
+      <view class="tdrefundcount" bindtap="loadrefund" id="{{index}}">{{item.refundcount}}</view>
+      <view class="tdrefundprice" bindtap="loadrefund" id="{{index}}">{{item.refundprice}}</view>
     </view>
   </block>
     <view class="tr">
@@ -85,3 +85,33 @@
       <view class="tdsellcount">{{totalcount}}</view>
     </view>
 </view>
+
+
+
+<block wx:for="{{itemlist}}" wx:key="{{item}}" wx:if="{{mode == 3}}">
+  <view class="area">
+    <view class="table">
+      <view class="th">
+        <view class="tdseqtag">序号</view>
+        <view class="tdseq">{{index + 1}}</view>
+        <view class="tdstattag">状态</view>
+        <view class="{{item.storeid == 0?'tdstattag':'tdstat'}}">{{item.state}}</view>
+        <view class="tdstattag">--</view>
+      </view>      
+      <view class="tr">
+          <view class="tdtimestamp">{{item.modelcode}}</view>
+          <view class="tdseq">{{item.modelname}}</view>
+          <view class="tdseq">{{item.style1}}</view>
+          <view class="tdseq">{{item.style2}}</view>
+      </view>
+      <block wx:for="{{item.record}}" wx:for-item="record" wx:key="{{rectime}}">
+        <view class="tr">
+          <view class="tdtimestamp">{{record.rectime}}</view>
+          <view class="tdseq">{{record.recname}}</view>
+          <view class="tdseq">{{record.recstore}}</view>
+          <view class="tdseq">{{record.rection}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</block>

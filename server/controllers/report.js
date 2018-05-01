@@ -14,6 +14,28 @@ const driver = require('knex')({
 
 
 module.exports = {
+  storereport: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
+    var arg = ctx.request.body[1];
+
+    if ((arg.startdate) && (arg.enddate) && (arg.storeid)) {
+      //查询店面库存和库存流水情况
+      arg.startdate += ' 00:00:00';
+      arg.enddate += ' 23:59:59';
+      await driver.schema.raw(
+        'SELECT DATE_FORMAT(actime,\'%Y-%m-%d\') actime,action,count(1) count FROM itemrec WHERE storeid = ? and actime between ? and ? group by DATE_FORMAT(actime,\'%Y-%m-%d\'),action',
+        [arg.storeid, arg.startdate, arg.enddate]
+      ).then(result => {
+        ctx.body = result;
+      })
+      await driver.schema.raw(
+        'SELECT count(1) count FROM item WHERE storeid = ?',
+        [arg.storeid]
+      ).then(result => {
+        ctx.body[1] = result[0][0];
+      })
+    }
+  },
   sellreport: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];

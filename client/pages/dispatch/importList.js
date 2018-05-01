@@ -16,7 +16,6 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    var loginInfo = wx.getStorageSync('loginInfo');
     var permission = wx.getStorageSync('permission');
     var tenantIDList = [];
     var tenantNameList = [];
@@ -36,37 +35,17 @@ Page({
         tenantNameList.push(permission[x].tenantname);
       }
     }
-
-    //获取已有订单列表
-    util.showBusy();
-    wx.request({
-      url: `${config.service.host}/weapp/dispatch/queryImportList`, 
-      data: [loginInfo,
-        {}],
-      method: 'POST', 
-      success: function(result){
-        that.setData({
-          tenantIDList: tenantIDList,
-          tenantNameList: tenantNameList,
-          list: result.data[0],
-        })
-        util.stopBusy();
-      },
-      fail: function(err){
-        util.showModel('网络异常', err);
-      }
+    that.setData({
+      tenantIDList: tenantIDList,
+      tenantNameList: tenantNameList,
     })
+
+    that.loadlist();
   },
 
   change: function (e) {
     this.setData({
       index:e.detail.value,
-    });
-  },
-
-  remarkInput: function(e) {
-    this.setData({
-      remark: e.detail.value,
     });
   },
 
@@ -125,14 +104,13 @@ Page({
       data: [loginInfo,
         { 
           tenantid: that.data.tenantIDList[that.data.index],
-          remark: that.data.remark, 
           createuser: loginInfo.userid,
         }],
       method: 'POST',
       header: { 'content-type': 'application/json' },
       success: function (result) {
-        console.log(result)
-        wx.redirectTo({
+        that.loadlist();
+        wx.navigateTo({
           url: "/pages/dispatch/importDetail?id=" + result.data,
         });
       },
@@ -141,7 +119,28 @@ Page({
       }
     })
   },
+  loadlist:function(){
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
 
+    //获取已有订单列表
+    util.showBusy();
+    wx.request({
+      url: `${config.service.host}/weapp/dispatch/queryImportList`,
+      data: [loginInfo,
+        {}],
+      method: 'POST',
+      success: function (result) {
+        that.setData({
+          list: result.data[0],
+        })
+        util.stopBusy();
+      },
+      fail: function (err) {
+        util.showModel('网络异常', err);
+      }
+    })
+  },
   toDetail: function (e) {
     var that = this;
     var id = e.currentTarget.id;

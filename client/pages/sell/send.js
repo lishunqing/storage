@@ -24,7 +24,7 @@ Page({
     var storeNameList = [];
     var tenantIDList = [];
     for (var x in permission) {
-      if (permission[x].privilegeid != 1) {
+      if (permission[x].privilegeid != 3) {
         continue;
       }
       var newStore = true;
@@ -50,7 +50,6 @@ Page({
     })
 
     that.storeInput({ detail: { value: idx } });
-    that.loadList();
     setInterval(function () { that.codeScan(); }, 100);
   },
   storeInput: function (e) {
@@ -83,6 +82,7 @@ Page({
       style: tenantStyle,
       Idx: idx
     })
+    that.loadList();
   },
   starting: function () {
     var that = this;
@@ -117,12 +117,11 @@ Page({
           data: [loginInfo, {
             item: timestamp + '.' + sequence,
             modelid: modelid,
-            storeid: that.data.storeIDList[that.data.Idx],
-            action: '入库',
+            storeid: -1,
+            action: '调货',
           }],
           method: 'POST',
           success: function (result) {
-            that.loadList();
             util.stopBusy();
           },
           fail: function (err) {
@@ -134,6 +133,7 @@ Page({
         that.setData({
           stoping: true,
         });
+        that.loadList();
       },
       complete: (res) => {
         that.setData({
@@ -147,9 +147,10 @@ Page({
     var loginInfo = wx.getStorageSync('loginInfo');
     util.showBusy();
     wx.request({
-      url: `${config.service.host}/weapp/dispatch/queryArriveDetail`,
+      url: `${config.service.host}/weapp/item/queryRec`,
       data: [loginInfo, {
-        tenantid: that.data.tenantIDList[that.data.Idx],
+        storeid: -1,
+        action: '调货',
       }],
       method: 'POST',
       success: function (result) {

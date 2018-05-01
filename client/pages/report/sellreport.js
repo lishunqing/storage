@@ -163,7 +163,7 @@ Page({
       }
     })
   },
-  loaddetail: function (e) {
+  loadsell: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     var idx = e.currentTarget.id;
@@ -190,6 +190,90 @@ Page({
           totalcount: totalcount,
           totalprice: totalprice,
           mode:2,
+        })
+        util.stopBusy();
+      },
+      fail: function (err) {
+        util.showModel('网络异常', err);
+      }
+    })
+  },
+  loadrefund: function (e) {
+    var that = this;
+    var loginInfo = wx.getStorageSync('loginInfo');
+    var idx = e.currentTarget.id;
+
+    //尝试获取销售记录
+    util.showBusy();
+    wx.request({
+      url: `${config.service.host}/weapp/store/queryrefund`,
+      data: [loginInfo, {
+        storeid: that.data.reportlist[idx].storeid,
+        startdate: that.data.reportlist[idx].date,
+        enddate: that.data.reportlist[idx].date,
+      }],
+      method: 'POST',
+      success: function (result) {
+        var itemrec = result.data[0];
+        var itemlist = [];
+        var currentitem = { item: '' };
+        var lastrecordtime;
+        for (var x in itemrec) {
+          var item = {
+            item: itemrec[x].item,
+            modelid: itemrec[x].modelid,
+            storeid: itemrec[x].storeid,
+            state: itemrec[x].storeid == 0 ? itemrec[x].action : itemrec[x].storename,
+            actime: itemrec[x].itime,
+            actname: itemrec[x].itemuser,
+            action: itemrec[x].action,
+            modelcode: itemrec[x].modelcode,
+            modelname: itemrec[x].name,
+            style1: itemrec[x].style1,
+            style2: itemrec[x].style2,
+            record: [],
+          };
+          var record = {
+            rectime: itemrec[x].rectime,
+            recstore: itemrec[x].recstore,
+            recname: itemrec[x].recname,
+            rection: itemrec[x].rection,
+          };
+          if (currentitem.item == item.item) {
+            currentitem.record.push(record);
+          } else {
+            //currentitem和item不同，item中是一条信记录
+            //currentitem状态是盘点的情况下，需要添加一条记录
+            if (currentitem.actime > lastrecordtime) {
+              var newrecord = {
+                rectime: currentitem.actime,
+                recstore: currentitem.state,
+                recname: currentitem.actname,
+                rection: '确认',
+              };
+              currentitem.record.push(newrecord);
+            }
+            item.record.push(record);
+            currentitem = item;
+
+            itemlist.push(item);
+          }
+          lastrecordtime = itemrec[x].rectime;
+        }
+        if (currentitem.actime > lastrecordtime) {
+          var newrecord = {
+            rectime: currentitem.actime,
+            recstore: currentitem.state,
+            recname: currentitem.actname,
+            rection: '确认',
+          };
+          currentitem.record.push(newrecord);
+        }
+
+        that.setData({
+          itemrec: result.data[0],
+          itemlist: itemlist,
+          mode: 3,
         })
         util.stopBusy();
       },
@@ -237,6 +321,8 @@ Page({
     var that = this;
     var mode = that.data.mode;
     if (mode == 2){
+      mode = 1;
+    } else if (mode == 3){
       mode = 1;
     }
     that.setData({

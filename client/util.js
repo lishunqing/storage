@@ -3,7 +3,7 @@ const getTime = date => {
     n = n.toString()
     return n[1] ? n : '0' + n
   };
-  return N(date.getFullYear()) + '-' + N(date.getMonth() + 1) + '-' + N(date.getDate()) + ' ' + N(date.getHours()) + ':' + N(date.getMinutes()) + ':' + (date.getSeconds());
+  return date.getFullYear() + '-' + N(date.getMonth() + 1) + '-' + N(date.getDate()) + ' ' + N(date.getHours()) + ':' + N(date.getMinutes()) + ':' + (date.getSeconds());
 }
 
 const getDate = date => {
@@ -11,7 +11,7 @@ const getDate = date => {
     n = n.toString()
     return n[1] ? n : '0' + n
   };
-  return N(date.getFullYear()) + '-' + N(date.getMonth() + 1) + '-' + N(date.getDate());
+  return date.getFullYear() + '-' + N(date.getMonth() + 1) + '-' + N(date.getDate());
 }
 
 const getMinute = date => {
@@ -38,6 +38,15 @@ var showSuccess = text => wx.showToast({
   icon: 'success'
 }) 
 // 显示失败提示 
+var showError = (title, content) => {
+  wx.hideToast();
+  wx.showModal({
+    title,
+    content: content,
+    showCancel: false
+  }) 
+}
+// 显示失败提示 
 var showModel = (title, content) => {
   wx.hideToast();
   wx.showModal({ 
@@ -46,4 +55,4 @@ var showModel = (title, content) => {
     showCancel: false
   }) 
 } 
-module.exports = { getTime, getDate, getMinute, showBusy, stopBusy, showSuccess, showModel } 
+module.exports = { getTime, getDate, getMinute, showBusy, stopBusy, showSuccess, showError, showModel } 

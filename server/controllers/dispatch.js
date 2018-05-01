@@ -22,8 +22,8 @@ module.exports = {
       'select i.importlistid,\
               i.tenantid,\
               t.name tenantname,\
-              IFNULL(i.remark,"") remark,\
-              DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
+              IFNULL(i.name,"") name,\
+              DATE_FORMAT(i.updatetime,\'%Y-%m-%d %H:%i:%S\') updatetime,\
               i.createuser\
       from importlist i\
         left join tenant t\
@@ -35,8 +35,7 @@ module.exports = {
           on p.storeid = s.storeid\
       where p.privilegeid = 2\
       and p.userid = ?)\
-      and i.finishtime is null\
-      order by i.importlistid',
+      order by i.updatetime desc',
       [loginInfo.userid]
     ).then(result => {
       ctx.body = result;
@@ -67,7 +66,7 @@ module.exports = {
 
     var importlist;
     await driver.schema.raw(
-      'select i.importlistid,i.tenantid,t.name tenantname,IFNULL(i.remark,"") remark,DATE_FORMAT(i.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,i.createuser\
+      'select i.*,t.name tenantname\
       from importlist i\
         left join tenant t\
           on i.tenantid = t.tenantid\
@@ -79,15 +78,14 @@ module.exports = {
 
     var importdetail;
     await driver.schema.raw(
-      'select i.totalamount,\
-            i.cost importcost,\
-            i.instoreamount,\
+      'select i.*,\
             m.*\
       from importdetail i\
         left join model m\
           on i.modelid = m.modelid\
       where i.importlistid = ?\
-      order by i.modelid',
+      and i.totalamount > i.instoreamount\
+      order by m.modelcode,m.style1,m.style2',
       [arg.importlistid]
     ).then(result => {
       importdetail = result[0]
@@ -96,27 +94,41 @@ module.exports = {
   },
   addImportDetail: async (ctx, next) => {
     var openid = ctx.request.body[0].openid;
+    var importlist = ctx.request.body[1];
+    var importdetail = ctx.request.body[2];
+
+
+    await driver("importdetail").insert(importdetail).then();
+    if ((importlist.importname)&&(importlist.importperfix)&&(importlist.importlistid)){
+      await driver.schema.raw(
+        'update importlist set name = ?,perfix = ? where importlistid = ?', [importlist.importname, importlist.importperfix, importlist.importlistid]
+      ).then(result => {
+        ctx.body = result
+      })
+    } else if((importlist.importname) && (importlist.importlistid)){
+      await driver.schema.raw(
+        'update importlist set name = ? where importlistid = ?', [importlist.importname, importlist.importlistid]
+      ).then(result => {
+        ctx.body = result
+      })
+    }
+  },
+  modImportDetail: async (ctx, next) => {
+    var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
     await driver.schema.raw(
-      'insert into importdetail(importlistid,modelid,totalamount,cost,instoreamount) values (?,?,?,?,0) on duplicate key update totalamount = ?,cost = ?', [
-        arg.importlistid,
-        arg.modelid,
-        arg.amount,
-        arg.cost,
-        arg.amount,
-        arg.cost,
-      ]
+      'update importdetail set totalamount = ? where id = ?', [arg.totalamount, arg.id]
     ).then(result => {
-      ctx.body = result[0]
+      ctx.body = result
     })
   },
   delImportDetail: async (ctx, next) => {
     var loginInfo = ctx.request.body[0];
     var arg = ctx.request.body[1];
     await driver.schema.raw(
-      'delete from importdetail where importlistid = ? and modelid = ?', [arg.importlistid, arg.modelid]
+      'delete from importdetail where id = ?', [ arg.id]
     ).then(result => {
-      ctx.body = result[0]
+      ctx.body = result
     })
   },
   queryArriveDetail: async (ctx, next) => {
@@ -128,253 +140,5 @@ module.exports = {
       ctx.body = result
     })
   },
-  finishImport: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
 
-    await driver.schema.raw(
-      'update importlist set finishtime = CURRENT_TIMESTAMP where importlistid = ?', [
-        arg.importlistid,
-      ]).then(result => {
-        ctx.body = result[0]
-      })
-  },
-  queryDispatchList: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-    //查询自己创建的未完成的进货单
-    var importList;
-    await driver.schema.raw(
-      'select d.dispatchlistid,\
-              d.dispatchtype,\
-              d.tenantid,\
-              t.name tenantname,\
-              fs.name fromstore,\
-              ts.name tostore,\
-              IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
-              d.createuser\
-      from dispatchlist d\
-        left join store fs\
-          on d.fromstore = fs.storeid\
-        left join store ts\
-          on d.tostore = ts.storeid\
-        left join tenant t\
-          on d.tenantid = t.tenantid\
-      where d.dispatchtype = ?\
-      and d.createuser = ?\
-      and d.finishtime is null\
-      order by d.dispatchlistid',
-      [arg.dispatchtype,loginInfo.userid]
-    ).then(result => {
-      importList = result[0]
-    })
-
-    //查询自己有权限的店铺
-    var storelist;
-    await driver.schema.raw(
-      'select s.*\
-      from permission p\
-        left join store s\
-          on p.storeid = s.storeid\
-      where p.privilegeid = ?\
-      and p.userid = ?',
-      [arg.privilegeid,loginInfo.userid]
-    ).then(result => {
-      storelist = result[0];
-    })
-    
-    var s = config.get(loginInfo.openid);
-    ctx.body = [importList,storelist,s];
-  },
-  queryInstoreList: async (ctx, next) => {
-    var condition = ctx.query;
-    var loginInfo = JSON.parse(condition.loginInfo);
-    //查询自己有权限确认签收的入库单
-    await driver.schema.raw(
-      'select d.dispatchlistid,\
-              d.dispatchtype,\
-              d.tenantid,\
-              t.name tenantname,\
-              fs.name fromstore,\
-              ts.name tostore,\
-              IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
-              d.createuser\
-      from dispatchlist d\
-        left join store fs\
-          on d.fromstore = fs.storeid\
-        left join store ts\
-          on d.tostore = ts.storeid\
-        left join tenant t\
-          on d.tenantid = t.tenantid\
-      where d.tostore in (\
-        select storeid\
-        from permission\
-        where privilegeid = 2\
-        and userid = ?)\
-      and d.finishtime is not null\
-      and d.instoretime is null\
-      order by d.dispatchlistid',
-      [loginInfo.userid]
-    ).then(result => {
-      ctx.body = [result[0]];
-    })
-  },
-  add: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-
-    //todo 检查loginInfo中有没有添加派遣单的权限。
-
-    await driver('dispatchlist').insert(arg).then(result => {
-      ctx.body = result[0]
-    })
-  },
-  del: async (ctx, next) => {
-    var openid = ctx.request.body[0].openid;
-    var arg = ctx.request.body[1];
-    await driver.schema.raw(
-      'delete from dispatchlist where dispatchlistid = ?', [arg.dispatchlistid]
-    ).then(result => {
-      ctx.body = result[0]
-    })
-  },
-  addDetail: async (ctx, next) => {
-    var openid = ctx.request.body[0].openid;
-    var arg = ctx.request.body[1];
-    await driver.schema.raw(
-      'replace into dispatchdetail(\
-        dispatchlistid,\
-        modelid,\
-        amount\
-      ) values (?,?,?)',[
-        arg.dispatchlistid,
-        arg.modelid,
-        arg.amount,
-      ]
-    ).then(result => {
-      ctx.body = result[0]
-    })
-  },
-  delDetail: async (ctx, next) => {
-    var openid = ctx.request.body[0].openid;
-    var arg = ctx.request.body[1];
-    await driver.schema.raw(
-      'delete from dispatchdetail where dispatchlistid = ? and modelid = ?', [arg.dispatchlistid,arg.modelid]
-    ).then(result => {
-      ctx.body = result[0]
-    })
-  },
-  queryDetail: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-
-    var dispatch;
-    await driver.schema.raw(
-      'select d.dispatchlistid,\
-              d.dispatchtype,\
-              d.tenantid,\
-              t.name tenantname,\
-              d.fromstore fromstoreid,\
-              fs.name fromstore,\
-              d.tostore tostoreid,\
-              ts.name tostore,\
-              IFNULL(d.remark,"") remark,\
-              DATE_FORMAT(d.createtime,\'%Y-%m-%d %H:%i:%S\') createtime,\
-              DATE_FORMAT(d.finishtime,\'%Y-%m-%d %H:%i:%S\') finishtime,\
-              d.createuser\
-      from dispatchlist d\
-        left join store fs\
-          on d.fromstore = fs.storeid\
-        left join store ts\
-          on d.tostore = ts.storeid\
-        left join tenant t\
-          on d.tenantid = t.tenantid\
-      where d.dispatchlistid = ?',
-      [arg.dispatchid]
-    ).then(result => {
-      dispatch = result[0][0];
-    })
-
-    var dispatchdetail;
-    if (dispatch.fromstoreid > 0){
-      await driver.schema.raw(
-        'select s.amount storageamount,\
-                IFNULL(d.amount,0) dispatchamount,\
-                m.*\
-          from storedetail s\
-            left join dispatchdetail d\
-              on s.modelid = d.modelid\
-              and d.dispatchlistid = ?\
-            left join model m\
-              on s.modelid = m.modelid\
-          where s.storeid = ?\
-          and s.amount > 0',
-        [arg.dispatchid, dispatch.fromstoreid]
-      ).then(result => {
-        dispatchdetail = result[0]
-      })
-    }else{
-      await driver.schema.raw(
-        'select d.amount dispatchamount,\
-              m.*\
-      from dispatchdetail d\
-        left join model m\
-        on d.modelid = m.modelid\
-      where d.dispatchlistid = ?\
-      order by d.modelid',
-        [arg.dispatchid]
-      ).then(result => {
-        dispatchdetail = result[0]
-      })
-    }
-
-    ctx.body = [dispatch, dispatchdetail];
-  },
-  finishDispatch: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-
-    await driver.schema.raw(
-      'update dispatchlist set finishtime = CURRENT_TIMESTAMP where dispatchlistid = ?',[
-        arg.dispatchlistid,
-      ]).then(result => {
-        ctx.body = result[0]
-      })
-  },
-  instore: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-
-    await driver.schema.raw(
-      'update dispatchlist set instoretime = CURRENT_TIMESTAMP, instoreuser = ? where dispatchlistid = ?', [
-        loginInfo.userid,
-        arg.dispatchlistid,
-      ]).then(result => {
-        ctx.body = result[0]
-      })
-  },
-  outstore: async (ctx, next) => {
-    var loginInfo = ctx.request.body[0];
-    var arg = ctx.request.body[1];
-    var detail = ctx.request.body[2];
-
-    await driver.schema.raw(
-      'delete from dispatchdetail where dispatchlistid = ?', [
-        arg.dispatchlistid,
-      ]).then(result => {
-        ctx.body = result[0]
-      })
-
-    await driver("dispatchdetail").insert(detail);
-
-    await driver.schema.raw(
-      'update dispatchlist set finishtime = CURRENT_TIMESTAMP, outstoretime = CURRENT_TIMESTAMP, outstoreuser = ? where dispatchlistid = ?', [
-        loginInfo.userid,
-        arg.dispatchlistid,
-      ]).then(result => {
-        ctx.body = result[0]
-      })
-  },
 }

@@ -206,6 +206,7 @@ Page({
         storeid: that.data.storeIDList[that.data.Idx],
         modelid: that.data.model.modelid,
         item:that.data.seq,
+        recitem: that.data.seq,
         action:'售出',
         selluser: loginInfo.userid,
         selltime: that.data.date + ' ' + that.data.time + ':00',

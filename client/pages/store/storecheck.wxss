@@ -1,40 +1,4 @@
 
-.tdcode {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  width:25vw;
-}
-.tdname {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:16vw;
-}
-.tdstyle1 {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:10vw;
-}
-.tdstyle2 {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:9vw;
-}
-
-.tdprice {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:12vw;
-}
-.tdamount {  
-  padding: 1vw;
-  border-right: 1px solid black;
-  text-align: center;
-  width:9vw;
-}
 .tdconfirm {  
   padding: 1vw;
   border-right: 1px solid black;

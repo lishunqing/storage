@@ -6,22 +6,19 @@
     "pages/dispatch/importDetail",
     "pages/dispatch/arriveList",
     "pages/store/destory",
-
     "pages/print/importPrint",
     "pages/print/importPrintConfirm",
     "pages/model/print",
-
     "pages/sell/arrive",
+    "pages/sell/send",
     "pages/store/storedetail",
     "pages/store/storecheck",
     "pages/sell/baditem",
-    
     "pages/sell/sell",
     "pages/sell/refund",
-
+    "pages/report/store/report",
     "pages/report/sellreport",
     "pages/report/sellmodel",
-    
     "pages/menu/userInfo",
     "pages/menu/userList",
     "pages/menu/userPermission"

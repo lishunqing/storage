@@ -1,13 +1,11 @@
 var config = require('../../config')
 var util = require('../../util')
- 
+  
 // importList.js
 Page({
 
   data: {
     id: 0,
-    existedModel: false,
-    modelInList: false,
     model: {},
     modelNameList: [],
     styleValueList: [],
@@ -73,19 +71,28 @@ Page({
     })
   },
 
+  importInput: function (e) {
+    var that = this;
+    var i = that.data.importList;
+    if (e.target.id == 'perfix'){
+      i.perfix = e.detail.value;
+      that.queryCode(i.perfix + i.code);
+    } else if (e.target.id == 'name') {
+      i.name = e.detail.value;
+    } else if (e.target.id == 'code') {
+      i.code = e.detail.value;
+      that.queryCode(i.perfix + i.code);
+    }
+
+    that.setData({
+      importList:i,
+    });
+  },
   codeInput: function (e) {
     var that = this;
-
-    if (!e.detail.value) {
-      that.setData({
-        model: {},
-        existedModel: false,
-      })
-      return;
-    }
     that.queryCode(e.detail.value);
   },
-  queryCode:function(code,next){
+  queryCode:function(code,e){
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
     //尝试获取款号
@@ -105,22 +112,18 @@ Page({
           m[0].cost = parseFloat(m[0].cost).toFixed(2);
           that.setData({
             model: m[0],
-            modellist: m,
-            existedModel: true,
-            modelInList: false,
           })
+          if (e) {
+            var modelid = that.getModelID(e,m);
+            if (modelid){
+              that.createDetail(modelid,e);
+            }
+          }
         }
         else {
           that.setData({
             model: { modelcode: code },
-            existedModel: false,
-            modelInList: false,
-            modellist: [],
           })
-        }
-        if (next){
-          var id = that.getModelID();
-          return that.createDetail(id);
         }
         util.stopBusy();
       },
@@ -134,8 +137,8 @@ Page({
     var m = that.data.model;
     if (e.target.id == "p") {
       m.name = that.data.modelNameList[e.detail.value];
-    } else {
-        m.name = e.detail.value;
+    } else if (e.detail.value){
+      m.name = e.detail.value;
     }
     that.setData({
       model: m
@@ -169,9 +172,11 @@ Page({
   },
   amountInput: function (e) {
     var that = this;
+    var m = that.data.model;
+    m.totalamount = parseInt(e.detail.value);
     if (e.detail.value) {
       that.setData({
-        amount: parseInt(e.detail.value),
+        model: m,
       })
     }
   },
@@ -179,6 +184,7 @@ Page({
     var that = this;
     var m = that.data.model;
     m["style" + e.target.id] = e.detail.value;
+    m.id = null;
     that.setData({
       model: m,
     })
@@ -187,29 +193,26 @@ Page({
     var that = this;
     var m = that.data.model;
     m["style" + e.target.id] = that.data.styleValueList[e.target.id][e.detail.value];
-
+    m.id = null;
     that.setData({
       model: m,
     })
   },
 
-  getModelID: function(){
+  getModelID: function(model,modellist){
     //尝试从modellist中获取model的modelid
     var that = this;
-    for(var x in that.data.modellist){
-      if (that.data.model.modelcode != that.data.modellist[x].modelcode){
-        continue;
-      }
+    for(var x in modellist){
       var matched = true;
       for(var y in that.data.style){
         var s = "style" + that.data.style[y].styleid;
-        if (that.data.model[s] != that.data.modellist[x][s]) {
+        if (model[s] != modellist[x][s]) {
           matched = false;
           break;
         }
       }
       if (matched){
-        return that.data.modellist[x].modelid;
+        return modellist[x].modelid;
       }
     }
     return undefined;
@@ -217,38 +220,55 @@ Page({
 
   addDetail: function (e) {
     var that = this;
-    var err;
+    var loginInfo = wx.getStorageSync('loginInfo');
 
-    var id = that.getModelID();
-    if (id) {
-      err = that.createDetail(id);
-    } else {
-      err = that.createModel(that.createDetail);
+    //校验数量
+    if (e.detail.value.totalamount == "") {
+      return util.showError('错误', '数量不能为空');
     }
 
-    if (err) {
-      util.showModel('错误', err);
-      return;
+    if (that.data.model.id){
+      //更新进货条目
+      util.showBusy();
+      wx.request({
+        url: `${config.service.host}/weapp/dispatch/modImportDetail`,
+        data: [loginInfo, {
+          totalamount: e.detail.value.totalamount,
+          id: that.data.model.id,
+          }],
+        method: 'POST',
+        header: { 'content-type': 'application/json' },
+        success: function (result) {
+          that.loadList();
+          util.stopBusy();
+        },
+        fail: function (err) {
+          util.showModel('网络异常', err);
+        }
+      })
+    }else{
+      that.createModel(e.detail.value);
     }
 
   },
 
-  createDetail: function (id) {
+  createDetail: function (id,e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
-    //校验数量
-    if ((that.data.amount == undefined) || (that.data.amount == "")) {
-      return '数量不能为空';
-    }
+
     //提交新的款式
     util.showBusy();
     wx.request({
       url: `${config.service.host}/weapp/dispatch/addImportDetail`,
       data: [loginInfo, {
         importlistid: that.data.id,
+        importname:e.importname,
+        importperfix:e.importperfix,
+      },{
+        importlistid: that.data.id,
         modelid: id,
-        amount: that.data.amount,
-        cost: that.data.model.cost,
+        totalamount: e.totalamount,
+        cost: e.cost,
       }],
       method: 'POST',
       header: { 'content-type': 'application/json' },
@@ -262,37 +282,47 @@ Page({
     })
   },
 
-  createModel: function (next) {
+  createModel: function (e) {
     var that = this;
     var loginInfo = wx.getStorageSync('loginInfo');
 
     var opt = { 'tenantid': that.data.importList.tenantid };
     //校验modecode不为空
-    if (that.data.model.modelcode == undefined) {
-      return '款号不能为空';
+    if ((!e.importperfix) && (!e.importcode) && (!e.modelcode)) {
+      return util.showError('错误', '款号不能为空');
     }
-    opt.modelcode = that.data.model.modelcode;
-    //校验name
-    if ((that.data.model.name == undefined) || (that.data.model.name == "")) {
-      return '名称不能为空';
+    if (e.modelcode){
+      opt.modelcode = e.modelcode;
+    }else{
+      opt.modelcode = e.importperfix + e.importcode;
     }
-    opt.name = that.data.model.name;
-    //校验价格
-    if ((that.data.model.price == undefined) || (that.data.model.price == "")) {
-      return '价格不能为空';
+
+    if (!that.data.model.modelid){
+      //校验name
+      if (!e.name) {
+        return util.showError('错误', '名称不能为空');
+      }
+      opt.name = e.name;
+      //校验价格
+      if (!e.price) {
+        return util.showError('错误', '价格不能为空');
+      }
+      opt.price = e.price;
+    }else{
+      opt.name = that.data.model.name;
+      opt.price = that.data.model.price;
     }
-    opt.price = that.data.model.price;
+
     //校验各个style
     for (var x in that.data.style) {
       var s = "style" + that.data.style[x].styleid;
-      if ((that.data.model[s] == undefined) || (that.data.model[s] == "")) {
-        return that.data.style[x].stylename + '不能为空';
+      if (!e[s]) {
+        return util.showError('错误', that.data.style[x].stylename + '不能为空');
       }
-      opt[s] = that.data.model[s];
+      opt[s] = e[s];
     }
-    if (that.data.model.cost) {
-      opt.cost = that.data.model.cost;
-    } else {
+    opt.cost = parseFloat(e.cost).toFixed(2);
+    if (opt.cost == 'NaN') {
       opt.cost = 0;
     }
 
@@ -306,7 +336,7 @@ Page({
       success: function (result) {
         //提交款式成功以后重新查询款式
         that.updateStyle();
-        return that.queryCode(opt.modelcode,next);
+        return that.queryCode(opt.modelcode,e);
       },
       fail: function (err) {
         util.showModel('网络异常', err);
@@ -315,17 +345,9 @@ Page({
   },
   choose: function (e) {
     var that = this;
-    for (var x in that.data.list) {
-      var t = that.data.list[x];
-      if (that.data.list[x].modelid == e.currentTarget.id) {
-        that.setData({
-          existedModel: true,
-          modelInList: true,
-          model: that.data.list[x],
-          amount: that.data.list[x].totalamount,
-        });
-      }
-    }
+    that.setData({
+      model: that.data.list[e.currentTarget.id],
+    })
   },
   delDetail: function (e) {
     var that = this;
@@ -342,15 +364,14 @@ Page({
             url: `${config.service.host}/weapp/dispatch/delImportDetail`,
             data: [loginInfo,
               {
-                importlistid: that.data.id,
-                modelid: that.data.model.modelid,
+                id: that.data.model.id,
               }],
             method: 'POST',
             header: { 'content-type': 'application/json' },
             success: function (result) {
               var data = that.data.list;
               for (var x in data) {
-                if (data[x].modelid == that.data.model.modelid) {
+                if (data[x].id == that.data.model.id) {
                   data.splice(x, 1);
                   break;
                 }
@@ -358,9 +379,6 @@ Page({
               that.setData({
                 list: data,
                 model: {},
-                existedModel: false,
-                modelInList: false,
-                amount: "",
               });
               util.stopBusy();
             },

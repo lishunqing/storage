@@ -43,6 +43,7 @@ router.post('/store/queryItem', controllers.store.queryItem)
 router.post('/store/query', controllers.store.query)
 router.post('/store/addsell', controllers.store.addsell)
 router.post('/store/querysell', controllers.store.querysell)
+router.post('/store/queryrefund', controllers.store.queryrefund)
 
 router.post('/item/add', controllers.item.add)
 router.post('/item/queryRec', controllers.item.queryRec)
@@ -60,6 +61,7 @@ router.post('/storage/addModel', controllers.model.add)
 router.post('/storage/delModel', controllers.model.del)
 router.post('/storage/modModel', controllers.model.mod)
 
+router.post('/report/storereport', controllers.report.storereport)
 router.post('/report/sellreport', controllers.report.sellreport)
 router.post('/report/sellmodel', controllers.report.sellmodel)
 
@@ -68,24 +70,9 @@ router.post('/dispatch/queryImportList', controllers.dispatch.queryImportList)
 router.post('/dispatch/addImportList', controllers.dispatch.addImportList)
 router.post('/dispatch/delImportList', controllers.dispatch.delImportList)
 router.post('/dispatch/addImportDetail', controllers.dispatch.addImportDetail)
+router.post('/dispatch/modImportDetail', controllers.dispatch.modImportDetail)
 router.post('/dispatch/delImportDetail', controllers.dispatch.delImportDetail)
 router.post('/dispatch/queryImportDetail', controllers.dispatch.queryImportDetail)
 router.post('/dispatch/queryArriveDetail', controllers.dispatch.queryArriveDetail)
 
-
-
-router.post('/storage/finishImport', controllers.dispatch.finishImport)
-router.post('/storage/addArrive', controllers.store.addArrive)
-
-
-router.post('/storage/queryDispatchList', controllers.dispatch.queryDispatchList)
-router.get('/storage/queryInstoreList', controllers.dispatch.queryInstoreList)
-router.post('/storage/addDispatchList', controllers.dispatch.add)
-router.post('/storage/delDispatchList', controllers.dispatch.del)
-router.post('/storage/addDispatchDetail', controllers.dispatch.addDetail)
-router.post('/storage/delDispatchDetail', controllers.dispatch.delDetail)
-router.post('/storage/finishDispatch', controllers.dispatch.finishDispatch)
-router.post('/storage/instore', controllers.dispatch.instore)
-router.post('/storage/outstore', controllers.dispatch.outstore)
-router.post('/storage/queryDispatchDetail', controllers.dispatch.queryDetail)
 module.exports = router

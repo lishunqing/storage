@@ -1,0 +1,21 @@
+/* pages/report/store/report.wxss */
+
+.td {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:9vw;
+}
+.tdi {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:9vw;
+}
+.tdo {  
+  padding: 1vw;
+  border-right: 1px solid black;
+  text-align: center;
+  width:9vw;
+  color:#1aad19;
+}

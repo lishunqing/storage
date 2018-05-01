@@ -7,6 +7,14 @@
         <text>选择</text>
       </picker>
     </view>
+
+    <view class="item">
+      <text class="item-title">盘点</text>
+      <text class="item-value">{{date}}</text>
+      <picker bindchange="dateInput" class="item-picker" mode="date" value="{{date}}">  
+        <text>选择</text>
+      </picker>
+    </view>
     <view class="item">
       <text class="item-title">款号</text>
       <text class="item-value">{{model.modelcode}}</text>

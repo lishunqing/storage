@@ -52,6 +52,7 @@ Page({
     })
 
     that.storeInput({ detail: { value: idx } });
+    that.dateInput();
     setInterval(function () { that.codeScan(); }, 100);
   },
   storeInput: function (e) {
@@ -88,9 +89,31 @@ Page({
     that.loadList({
       storeid: that.data.storeIDList[that.data.Idx],
       action: '盘点',
+      date: that.data.date,
     }, 3);
   },
-
+  dateInput: function (e) {
+    var that = this;
+    if (e){
+      wx.setStorageSync('checkDate', e.detail.value);
+      that.setData({
+        date: e.detail.value,
+      });
+    }else{
+      var date = wx.getStorageSync('checkDate');
+      if (!date){
+        date = util.getDate(new Date(new Date().getTime() - 3 * 86400000));
+      }
+      that.setData({
+        date: date,
+      });
+    }
+    that.loadList({
+      storeid: that.data.storeIDList[that.data.Idx],
+      action: '盘点',
+      date: that.data.date,
+    }, 3);    
+  },
   back: function (e) {
     var that = this;
     that.setData({
@@ -169,13 +192,16 @@ Page({
       method: 'POST',
       success: function (result) {
         var totalamount = 0;
+        var confirmamount = 0;
         for (var x in result.data[0]) {
           totalamount += result.data[0][x].amount;
+          confirmamount += result.data[0][x].confirmamount;
         }
         that.setData({
           list: result.data[0],
           choosed: false,
           totalamount: totalamount,
+          confirmamount: confirmamount,
         })
         util.stopBusy();
       },

@@ -48,6 +48,7 @@ Page({
     })
 
     that.storeInput({ detail: { value: idx } });
+    that.dateInput();
   },
   storeInput: function (e) {
     var that = this;
@@ -72,6 +73,7 @@ Page({
     }
 
     wx.setStorageSync('defaultStore', that.data.storeIDList[parseInt(idx)]);
+    var date = wx.getStorageSync('checkDate');
 
     that.setData({
       modelNameList: modelnamelist,
@@ -83,7 +85,30 @@ Page({
     that.loadList({
       storeid: that.data.storeIDList[that.data.Idx],
       action: '盘点',
+      date: date,
     },1);
+  },
+  dateInput: function (e) {
+    var that = this;
+    if (e) {
+      wx.setStorageSync('checkDate', e.detail.value);
+      that.setData({
+        date: e.detail.value,
+      });
+    } else {
+      var date = wx.getStorageSync('checkDate');
+      if (!date) {
+        date = util.getDate(new Date(new Date().getTime() - 3 * 86400000));
+      }
+      that.setData({
+        date: date,
+      });
+    }
+    that.loadList({
+      storeid: that.data.storeIDList[that.data.Idx],
+      action: '盘点',
+      date: that.data.date,
+    }, 1);
   },
   codeInput: function (e) {
     var that = this;
